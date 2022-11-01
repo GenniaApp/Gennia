@@ -1,0 +1,32 @@
+{
+  "name": "reqweyhi",
+  "version": "1.1.1",
+  "description": "Reqwey's Homepage Viewer",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "repository": "https://github.com/electron/electron-quick-start",
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial",
+    "demo"
+  ],
+  "author": "Reqwey",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "electron": "^21.2.1",
+    "electron-builder": "^22.10.3"
+  },
+  "build": {
+    "appId": "com.reqwey.hi",
+    "productName": "Hi Reqwey",
+    "copyright": "Copyright © 2022 Reqwey",
+    "win": {
+      "icon": "./assets/images/windows11/LargeTile.scale-400.png"
+    }
+  }
+}

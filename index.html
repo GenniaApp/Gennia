@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN" style="position:fixed;width:100%;overflow:hidden">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<style>
+		.fadeInUp {
+			-webkit-animation: fadeInUp 1s;
+			animation: fadeInUp 1s
+		}
+
+		@keyframes fadeInUp {
+			0% {
+				margin-top: 500px;
+				opacity: 0
+			}
+
+			100% {
+				margin-top: 0;
+				opacity: 1
+			}
+		}
+
+		@-webkit-keyframes fadeInUp {
+			0% {
+				margin-top: 500px;
+				opacity: 0
+			}
+
+			100% {
+				margin-top: 0;
+				opacity: 1
+			}
+		}
+
+		.fadeInDown {
+			-webkit-animation: fadeInDown 1s;
+			animation: fadeInDown 1s
+		}
+
+		@keyframes fadeInDown {
+			0% {
+				margin-top: -500px;
+				opacity: 0
+			}
+
+			100% {
+				margin-top: 0;
+				opacity: 1
+			}
+		}
+
+		@-webkit-keyframes fadeInDown {
+			0% {
+				margin-top: -500px;
+				opacity: 0
+			}
+
+			100% {
+				margin-top: 0;
+				opacity: 1
+			}
+		}
+	</style>
+	<meta content="IE=edge" http-equiv="X-UA-Compatible">
+	<meta name="viewport" content="width=device-width">
+	<title>Hi Reqwey</title>
+	<link rel="manifest" href="./manifest.json">
+	<link href="./assets/css/semantic.min.css" rel="stylesheet">
+	<link href="./assets/css/reqwey.min.css" rel="stylesheet">
+	<link rel="shortcut icon" type="image/png" href="./assets/images/favicon.ico">
+</head>
+
+<body>
+	<div class="wrapper">
+		<div id="web_bg" style="background-image:url(./assets/images/background.webp)"></div>
+	</div>
+	<div class="reqtoolbar font-content">
+		<div class="reqtitle">
+			<h3 style="display: inline-block; margin-top: 5px; margin-left: 10px; margin-right: 5px;">Home</h3>
+		</div>
+		<div class="reqcontrols">
+			<div class="reqminicon" onclick=window.electron.windowMin()><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M376 232H8c-4.42 0-8 3.58-8 8v32c0 4.42 3.58 8 8 8h368c4.42 0 8-3.58 8-8v-32c0-4.42-3.58-8-8-8z"/></svg></div>
+			<div class="reqmaxicon" id="expandControl" style="display: inline-block" onclick=toggleWindowExpand()><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 180V56c0-13.3 10.7-24 24-24h124c6.6 0 12 5.4 12 12v8c0 6.6-5.4 12-12 12H32v116c0 6.6-5.4 12-12 12h-8c-6.6 0-12-5.4-12-12zM300 32h124c13.3 0 24 10.7 24 24v124c0 6.6-5.4 12-12 12h-8c-6.6 0-12-5.4-12-12V64H300c-6.6 0-12-5.4-12-12v-8c0-6.6 5.4-12 12-12zm148 300v124c0 13.3-10.7 24-24 24H300c-6.6 0-12-5.4-12-12v-8c0-6.6 5.4-12 12-12h116V332c0-6.6 5.4-12 12-12h8c6.6 0 12 5.4 12 12zM148 480H24c-13.3 0-24-10.7-24-24V332c0-6.6 5.4-12 12-12h8c6.6 0 12 5.4 12 12v116h116c6.6 0 12 5.4 12 12v8c0 6.6-5.4 12-12 12z"/></svg></div>
+			<div class="reqmaxicon" id="restoreControl" style="display: none" onclick=toggleWindowRestore()><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M436 192H312c-13.3 0-24-10.7-24-24V44c0-6.6 5.4-12 12-12h8c6.6 0 12 5.4 12 12v116h116c6.6 0 12 5.4 12 12v8c0 6.6-5.4 12-12 12zm-276-24V44c0-6.6-5.4-12-12-12h-8c-6.6 0-12 5.4-12 12v116H12c-6.6 0-12 5.4-12 12v8c0 6.6 5.4 12 12 12h124c13.3 0 24-10.7 24-24zm0 300V344c0-13.3-10.7-24-24-24H12c-6.6 0-12 5.4-12 12v8c0 6.6 5.4 12 12 12h116v116c0 6.6 5.4 12 12 12h8c6.6 0 12-5.4 12-12zm160 0V352h116c6.6 0 12-5.4 12-12v-8c0-6.6-5.4-12-12-12H312c-13.3 0-24 10.7-24 24v124c0 6.6 5.4 12 12 12h8c6.6 0 12-5.4 12-12z"/></svg></div>
+			<div class="reqcloseicon" onclick=window.electron.windowClose()><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M193.94 256L296.5 153.44l21.15-21.15c3.12-3.12 3.12-8.19 0-11.31l-22.63-22.63c-3.12-3.12-8.19-3.12-11.31 0L160 222.06 36.29 98.34c-3.12-3.12-8.19-3.12-11.31 0L2.34 120.97c-3.12 3.12-3.12 8.19 0 11.31L126.06 256 2.34 379.71c-3.12 3.12-3.12 8.19 0 11.31l22.63 22.63c3.12 3.12 8.19 3.12 11.31 0L160 289.94 262.56 392.5l21.15 21.15c3.12 3.12 8.19 3.12 11.31 0l22.63-22.63c3.12-3.12 3.12-8.19 0-11.31L193.94 256z"/></svg></div>
+		</div>	
+	</div>
+	<div class="container">
+		<div class="fadeInDown avatar" style="text-align:center"><img src="./assets/images/avatar.png" alt="Reqwey"
+				title="Reqwey" style="max-height:150px;border-radius:25%"></div>
+		<div class="fadeInUp ui segment" style="text-align:center;margin:-40px 0 0 0!important;padding-top:40px;z-index:-1">
+			<h1 style="font-size:2.4rem!important">Reqwey</h1>
+			<div class="reqbuttons"><a class="btn" target="_blank" rel="external nofollow noopener noreferrer"
+					href="https://github.com/Reqwey?tab=followers"><span class="req title" type="text"
+						id="followers">N/A</span><span class="desc">Followers</span></a><a class="btn" target="_blank"
+					rel="external nofollow noopener noreferrer" href="https://github.com/Reqwey?tab=following"><span
+						class="req title" type="text" id="following">N/A</span><span class="desc">Following</span></a><a class="btn"
+					target="_blank" rel="external nofollow noopener noreferrer"
+					href="https://github.com/Reqwey?tab=repositories"><span class="req title" type="text"
+						id="public_repos">N/A</span><span class="desc">Repositories</span></a></div>
+			<div class="reqbio"><span class="req">「Live with peace and love.」</span></div>
+			<div class="reqprofile"><span class="description">高中生 / OIer / MtF</span></div>
+			<div class="reqlinks"><a class="ui button" href="./oi-blog-main-viewer.html">Open OI Blog Viewer</a></div>
+		</div>
+	</div>
+	<div class="reqbottombar">
+		<div class="reqleftfooter" id="footer">Loading...</div>
+	</div>
+	<script src="./renderer.js"></script>
+</body>
+</html>
