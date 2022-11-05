@@ -1,4 +1,5 @@
 html {
+	-webkit-user-select: none;
 	user-select: none;
 }
 
@@ -79,7 +80,7 @@ span {
 	width: 100%;
 	height: 55px;
 	z-index: 99;
-	background-color: #f7f7f7;
+	background-color: rgba(255,255,255,70%);
 	/* background: -webkit-linear-gradient(#c7d7fc, #e4efff) !important; */
 	-webkit-app-region: drag
 }
@@ -90,7 +91,7 @@ span {
 	width: 100%;
 	height: 30px;
 	z-index: 99;
-	background-color: #f7f7f7;
+	background-color: rgba(255,255,255,70%);
 	/* background: -webkit-linear-gradient(#c7d7fc, #e4efff) !important; */
 	-webkit-app-region: drag
 }
@@ -110,6 +111,13 @@ span {
 	z-index: 100;
 }
 
+.reqrightfooter {
+	position: absolute;
+	right: 5px;
+	bottom: 5px;
+	z-index: 100;
+}
+
 .reqcontrols {
 	-webkit-app-region: no-drag;
 	position: absolute;
@@ -120,7 +128,7 @@ span {
 	display: inline-block;
 }
 
-.reqtoolbar svg {
+.reqtoolbar svg:not(.reqreturnicon) {
 	height: 20px;
 	fill: currentColor;
 	margin: 15px;
@@ -145,9 +153,12 @@ span {
 	padding: 10px
 }
 
+svg {
+	fill: currentColor
+}
+
 .reqlinks>a svg {
 	height: 30px;
-	fill: currentColor;
 	margin: 5px
 }
 
@@ -167,12 +178,163 @@ span {
 	color: teal
 }
 
+.reqplayer {
+	font-size: 14px;
+}
+
+.reqplayer.color0 {
+	color: #D81B60 !important
+}
+
+.reqplayer.color1 {
+	color: #03A9F4 !important
+}
+
+.reqplayer.color2 {
+	color: #FF9800 !important
+}
+
+.reqplayer.color3 {
+	color: #9C27B0 !important
+}
+
+.reqplayer.color4 {
+	color: #4CAF50 !important
+}
+
+.reqplayer.color5 {
+	color: #5C6BC0 !important
+}
+
+.reqplayer.color6 {
+	color: #FF5722 !important
+}
+
+.reqplayer.color7 {
+	color: #009688 !important
+}
+
+.reqplayer.color8 {
+	color: #673AB7 !important
+}
+
+.reqplayer.color9 {
+	color: #CDDC39 !important
+}
+
+.reqplayer.color10 {
+	color: #FFEB3B !important
+}
+
+.reqplayer.color11 {
+	color: #FFC107 !important
+}
+
+.reqblock.color0 {
+	background-color: #D81B60 !important
+}
+
+.reqblock.color1 {
+	background-color: #03A9F4 !important
+}
+
+.reqblock.color2 {
+	background-color: #FF9800 !important
+}
+
+.reqblock.color3 {
+	background-color: #9C27B0 !important
+}
+
+.reqblock.color4 {
+	background-color: #4CAF50 !important
+}
+
+.reqblock.color5 {
+	background-color: #5C6BC0 !important
+}
+
+.reqblock.color6 {
+	background-color: #FF5722 !important
+}
+
+.reqblock.color7 {
+	background-color: #009688 !important
+}
+
+.reqblock.color8 {
+	background-color: #673AB7 !important
+}
+
+.reqblock.color9 {
+	background-color: #CDDC39 !important
+}
+
+.reqblock.color10 {
+	background-color: #FFEB3B !important
+}
+
+.reqblock.color11 {
+	background-color: #FFC107 !important
+}
+
+.reqmessageboard {
+	position: absolute;
+	right: 5px;
+	bottom: 35px;
+	z-index: 101;
+	min-width: 300px;
+	height: 100px;
+}
+.reqmessageboard .ui.segment {
+	z-index: 101;
+	min-width: 300px;
+	height: 100px;
+	overflow-y: auto;
+	overflow-x: fixed;
+}
+.reqmessageboard .reqmessagesender {
+	font-family: fwzc;
+	position: absolute;
+	bottom: 0;
+	z-index: 102;
+	font-size: 1em;
+	width: 100%;
+	margin: 0;
+	outline: 0;
+	-webkit-appearance: none;
+	tap-highlight-color: rgba(255,255,255,0);
+	line-height: 1.21428571em;
+	padding: .67857143em 1em;
+	font-size: 1em;
+	background: #fff;
+	color: rgba(0,0,0,.87);
+	border: unset;
+	border-radius: .28571429rem;
+	-webkit-box-shadow: 0 0 0 0 transparent inset;
+	box-shadow: 0 0 0 0 transparent inset;
+	-webkit-transition: color .1s ease,border-color .1s ease;
+	transition: color .1s ease,border-color .1s ease;
+}
+
+.reqmessageboard.expand {
+	height: 500px;
+}
+.reqmessageboard.expand .ui.segment {
+	height: 500px;
+}
+
 .reqbuttons {
 	margin: 1rem 0;
 	align-self: stretch;
 	display: grid;
 	grid-gap: 2px;
 	grid-template-columns: repeat(auto-fill, calc((100% - 2 * 2px)/ 3))
+}
+
+.ui.list>.item .reqheader {
+	display: block;
+	margin: 0;
 }
 
 .reqbuttons .btn {
@@ -204,12 +366,26 @@ span {
 	font-weight: 500
 }
 
-.req {
+.req:not(.button) {
 	background: -webkit-linear-gradient(#d12d9c, #5ea2ef) !important;
 	-webkit-background-clip: text !important;
 	-webkit-text-fill-color: transparent !important;
 	animation: gradient 15s ease infinite !important;
 	box-shadow: none !important
+}
+
+.req.button {
+	color: rgb(255, 255, 255) !important;
+	opacity: 0.95 !important;
+	background-image: linear-gradient(286deg, #5ea2ef 23%, #d12d9c 76%) !important;
+	transition: all 0.3s ease 0s !important;
+}
+
+.req.button:hover {
+	color: rgb(255, 255, 255) !important;
+	opacity: 0.95 !important;
+	background-image: linear-gradient(286deg, #5ea2ef 23%, #d12d9c 76%) !important;
+	transition: all 0.3s ease 0s !important;
 }
 
 @font-face {
@@ -268,7 +444,7 @@ a {
 	-o-transition: all .28s ease
 }
 
-a:hover {
+a:not(.reqreturnicon) {
 	color: #ff5722
 }
 
@@ -385,4 +561,95 @@ blockquote {
 
 ::-webkit-scrollbar-thumb:hover {
 	background: rgba(128, 135, 139, .8)
+}
+
+/* Game Table */
+#game-map {
+  table-layout: fixed;
+}
+
+#game-map td {
+  position: relative;
+  border: 1px solid black;
+  width: 30px;
+  height: 30px;
+  max-width: 30px;
+  max-height: 30px;
+  min-width: 30px;
+  min-height: 30px;
+  background: #dcdcdc;
+  text-align: center;
+  color: white;
+  text-shadow: 0 0 2px black;
+  opacity: 1;
+  padding: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10px;
+  background-size: 23px 23px;
+}
+
+#game-map td.selected {
+  position: relative;
+  z-index: 20;
+  border: 1px solid white;
+}
+
+#game-map td.selected:hover {
+  cursor: pointer;
+}
+
+#game-map td.attackable {
+  position: relative;
+  z-index: 20;
+  opacity: .4;
+}
+
+#game-map td.attackable:hover {
+  cursor: pointer;
+}
+
+#game-map td.king,
+#game-map td.city,
+#game-map td.plain,
+#game-map td.swamp {
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+#game-map td.king {
+  background-image: url("../img/crown.png");
+}
+
+#game-map td.city {
+  background-color: gray;
+  background-image: url("../img/city.png");
+}
+
+#game-map td.neutral {
+  background-color: gray;
+}
+
+#game-map td.mountain {
+  background-image: url("../img/mountain.png");
+  background-color: #bbbbbb;
+}
+
+#game-map td.obstacle {
+  background-image: url("../img/obstacle.png");
+}
+
+#game-map td.swamp {
+  background-image: url("../img/swamp.png");
+  background-color: gray;
+}
+
+#game-map td.fog {
+  border: 1px solid transparent;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+#game-map td.fog.selected {
+  border: 1px solid white;
 }

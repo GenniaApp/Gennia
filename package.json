@@ -1,19 +1,18 @@
 {
-  "name": "reqweyhi",
-  "version": "1.1.1",
-  "description": "Reqwey's Homepage Viewer",
+  "name": "gennia",
+  "version": "1.0.0Preview",
+  "description": "Yet another portable generals.io server & client",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
+    "start": "electron --trace-warnings .",
     "build": "electron-builder"
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/Reqwey/Gennia",
   "keywords": [
     "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+    "generals.io",
+    "socket-io",
+    "game"
   ],
   "author": "Reqwey",
   "license": "CC0-1.0",
@@ -22,11 +21,14 @@
     "electron-builder": "^22.10.3"
   },
   "build": {
-    "appId": "com.reqwey.hi",
-    "productName": "Hi Reqwey",
-    "copyright": "Copyright © 2022 Reqwey",
+    "appId": "com.reqwey.gennia",
+    "productName": "Gennia",
+    "copyright": "© 2022 Reqwey Technologies Inc",
     "win": {
-      "icon": "./assets/images/windows11/LargeTile.scale-400.png"
+      "icon": "assets/img/favicon.png"
     }
+  },
+  "dependencies": {
+    "socket.io": "^4.5.3"
   }
 }
