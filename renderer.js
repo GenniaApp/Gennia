@@ -405,21 +405,12 @@ function gameJoin(username) {
 					var $cell = $(`#td${i}-${j}`);
 					let inner = (!gameMap[i][j].unit) ? '' : gameMap[i][j].unit.toString()
 					if (window.selectedTd && window.selectedTd.x === i && window.selectedTd.y === j) {
-						if (gameMap[i][j].color !== window.playerColor) {
-							window.selectedTd = undefined
-							$cell.attr('class', gameMap[i][j].type.toLowerCase());
-							$cell.html(inner);
-							if (gameMap[i][j].color !== null) {
-								$cell.addClass(`reqblock color${gameMap[i][j].color}`)
-							}
+						if (window.selectedTd.half) {
+							window.selectedTd.unit = inner
 						} else {
-							if (window.selectedTd.half) {
-								window.selectedTd.unit = inner
-							} else {
-								$cell.attr('class', gameMap[i][j].type.toLowerCase() + ' selected');
-								$cell.html(inner);
-								$cell.addClass(`reqblock color${gameMap[i][j].color}`)
-							}
+							$cell.attr('class', gameMap[i][j].type.toLowerCase() + ' selected');
+							$cell.html(inner);
+							$cell.addClass(`reqblock color${gameMap[i][j].color}`)
 						}
 					} else {
 						$cell.attr('class', gameMap[i][j].type.toLowerCase());

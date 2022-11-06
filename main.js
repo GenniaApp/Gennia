@@ -101,7 +101,12 @@ async function handleGame(io) {
     global.gameStarted = true
 
     global.map = new GameMap(
-      global.gameConfig.mapWidth, global.gameConfig.mapHeight, global.players
+      global.gameConfig.mapWidth,
+      global.gameConfig.mapHeight,
+      global.gameConfig.mountain,
+      global.gameConfig.city,
+      global.gameConfig.swamp,
+      global.players
     )
     global.generals = await global.map.generate()
     global.mapGenerated = true
@@ -128,7 +133,7 @@ async function handleGame(io) {
         } else {
           socket.emit('attack_failure', from, to)
         }
-      })
+     })
     }
 
     let updTime = 500 / speedArr[global.gameConfig.gameSpeed]

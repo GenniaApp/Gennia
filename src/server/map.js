@@ -18,12 +18,64 @@ function getRandomInt(min, max) {
 }
 
 class GameMap {
-  constructor(width, height, kings) {
+  constructor(width, height, mountain, city, swamp, kings) {
     this.width = parseInt(kings.length * 4 + 10 * width);
     this.height = parseInt(kings.length * 4 + 10 * height);
+    if (mountain + city === 0) {
+      this.mountain = this.city = 0
+    } else {
+      this.mountain = parseInt(this.width * this.height / 4 * mountain / (mountain + city))
+      this.city = parseInt(this.width * this.height / 4 * city / (mountain + city))
+      console.log("mountains", this.mountain, "cities", this.city)
+    }
+    this.swamp = parseInt((this.width * this.height - this.mountain - this.city) / 3 * swamp)
     this.kings = kings;
     this.map = Array.from(Array(this.width), () => Array(this.height).fill(null));
     this.turn = 0
+  }
+
+  getFather(conn, curPoint) {
+    while (conn[curPoint] !== curPoint) curPoint = conn[curPoint]
+    return curPoint
+  }
+
+  isObstacle(block) { return block.type === 'Mountain' || block.type === 'City' }
+  isPlain(block) { return block.type === 'Plain' }
+
+  checkConnection(obstacleCount) {
+    let conn = new Array(this.width * this.height)
+    let size = new Array(this.width * this.height)
+    for (let i = 0; i < conn.length; i++) { conn[i] = i, size[i] = 1 }
+    for (let i = 0; i < this.width; i++) {
+      for (let j = 0; j < this.height; j++) {
+        if (!this.isObstacle(this.map[i][j])) {
+          let curPoint = i * this.height + j;
+          (new Array(new Point(-1, 0), new Point(0, -1))).forEach((dir) => {
+            let tx = i + dir.x, ty = j + dir.y;
+            if (this.withinMap({x: tx, y: ty}) && !this.isObstacle(this.map[tx][ty])) {
+              let lastPoint = tx * this.height + ty;
+              let curFather = this.getFather(conn, curPoint);
+              let lastFather = this.getFather(conn, lastPoint);
+              if (size[lastFather] > size[curFather]) {
+                conn[curFather] = lastFather;
+                size[lastFather] += size[curFather];
+              } else {
+                conn[lastFather] = curFather;
+                size[curFather] += size[lastFather];
+              }
+            }
+          })
+        }
+      }
+    }
+    for (let i = 0; i < this.width; i++) {
+      for (let j = 0; j < this.height; j++) {
+        if (size[this.getFather(conn, i * this.height + j)] >= .9 * (this.width * this.height - obstacleCount)) {
+          return true
+        }
+      }
+    }
+    return false
   }
 
   generate() {
@@ -60,7 +112,53 @@ class GameMap {
       console.log(i)
     }
     // Generate the mountain
-    // TODO
+    for (let i = 1; i <= this.mountain; ++i) {
+      let generated = false
+      for (let count = 3, x, y; count; --count) {
+        while (true) {
+          x = getRandomInt(0, this.width);
+          y = getRandomInt(0, this.height);
+          if (this.isPlain(this.map[x][y])) break;
+        }
+        this.map[x][y].type = 'Mountain'
+        if (this.checkConnection(i)) {
+          generated = true;
+          break
+        } else {
+          this.map[x][y].type = 'Plain'
+        }
+      }
+      if (!generated) { this.mountain = i - 1; console.log("Mountain Interrupted", i); break }
+    }
+    // Generate the city
+    for (let i = 1; i <= this.city; ++i) {
+      let generated = false
+      for (let count = 3, x, y; count; --count) {
+        while (true) {
+          x = getRandomInt(0, this.width);
+          y = getRandomInt(0, this.height);
+          if (this.isPlain(this.map[x][y])) break;
+        }
+        this.map[x][y].type = 'City'
+        if (this.checkConnection(i + this.mountain)) {
+          generated = true;
+          this.map[x][y].unit = getRandomInt(35, 55)
+          break
+        } else {
+          this.map[x][y].type = 'Plain'
+        }
+      }
+      if (!generated) { this.city = i - 1; console.log("City Interrupted", i); break }
+    }
+    // Generate the swamp.
+    for (let i = 1, x, y; i <= this.swamp; ++i) {
+      while (true) {
+        x = getRandomInt(0, this.width);
+        y = getRandomInt(0, this.height);
+        if (this.isPlain(this.map[x][y])) break;
+      }
+      this.map[x][y].type = 'Swamp'
+    }
 
     return new Promise(function (resolve, reject) {
       console.log('Map generated successfully')
