@@ -2,7 +2,7 @@
 
 > Yet another portable generals.io server & client
 
-![**Gennia**](../../../D:/reqwey/Gennia/assets/img/readme-image-1.png)
+![**Gennia**](assets/img/readme-image-1.png)
 
 ## Todo
 
