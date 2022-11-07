@@ -11,6 +11,21 @@ class Player {
     this.land = [];
   }
 
+  trans() {
+    // Disable `land` using because it will cause
+    // `Converting circular structure / Maximum call stack size exceeded` error
+    return {
+      id: this.id,
+      socket_id: this.socket_id,
+      username: this.username,
+      color: this.color,
+      isRoomHost: this.isRoomHost,
+      forceStart: this.forceStart,
+      isDead: this.isDead,
+      operatedTurn: this.operatedTurn
+    }
+  }
+
   setRoomHost(value) {
     this.isRoomHost = value;
   }
@@ -39,10 +54,6 @@ class Player {
   getTotalUnit() {
     var reducer = (value, land) => value + land.unit;
     return this.land.reduce(reducer, 0);
-  }
-
-  isAlive() {
-    return this.king.player === this;
   }
 
   beDominated() {

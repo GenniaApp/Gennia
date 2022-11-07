@@ -25,6 +25,29 @@ function toggleWindowRestore() {
 function keyGameJoin() {
 	if (window.event.keyCode === 13) gameJoin();
 }
+function reJoinGame() {
+	$('.reqmessageboard').remove()
+	$('.reqleaderboard').remove()
+	toggleJoinGame()
+}
+function toggleJoinGame() {
+	$('.reqtitle').html(`<h3 style="display: inline-block; margin-top: 5px; margin-left: 10px; margin-right: 5px;"><a class="ui mini button" style="display: inline-block" href='./index.html'><svg class="reqreturnicon" style="display: inline-block;font-size: inherit;height: 1em;overflow: visible;vertical-align: -0.125em;font-size: 13px;}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M570.24 247.41L512 199.52V104a8 8 0 0 0-8-8h-32a8 8 0 0 0-7.95 7.88v56.22L323.87 45a56.06 56.06 0 0 0-71.74 0L5.76 247.41a16 16 0 0 0-2 22.54L14 282.25a16 16 0 0 0 22.53 2L64 261.69V448a32.09 32.09 0 0 0 32 32h128a32.09 32.09 0 0 0 32-32V344h64v104a32.09 32.09 0 0 0 32 32h128a32.07 32.07 0 0 0 32-31.76V261.67l27.53 22.62a16 16 0 0 0 22.53-2L572.29 270a16 16 0 0 0-2.05-22.59zM463.85 432H368V328a32.09 32.09 0 0 0-32-32h-96a32.09 32.09 0 0 0-32 32v104h-96V222.27L288 77.65l176 144.56z"/></svg></a> Join in a Game - Gennia</h3>`)
+	$('#reqAppContainer').html(`<div class="fadeInUp ui segment" style="text-align:center;">
+<h1 style="font-size:2.4rem!important">Input the server's URL</h1>
+<div class="ui form">
+<div class="ui field">
+	<input type="text" name="serverUrl" id="serverUrl" onkeydown="keyGameJoin()" placeholder="Server URL (e.g. 192.168.1.1:9016)" value="${window.url ? window.url : ''}">
+</div>
+<div class="ui field">
+	<div class="ui ${window.url ? '' : 'disabled'} fluid submit button" id="submitGameJoin" onclick="gameJoin()">Join in</div>
+</div>
+</div>
+</div>`)
+	$("#serverUrl").bind("input change", () => {
+		$("#submitGameJoin").attr("class", "ui fluid submit button")
+		$("#submitGameJoin").html("Join in")
+	})
+}
 function changeSetting(gameConfig) {
 	$('#gameSpeed').slider('set value', gameConfig.gameSpeed, false)
 	$('#map_width').slider('set value', gameConfig.mapWidth, false)
@@ -70,6 +93,7 @@ function handleClick(i, j) {
 function gameJoin(username) {
 	$('#submitGameJoin').attr('class', 'ui econdary elastic fluid loading button');
 	let url = $('#serverUrl').val()
+	window.url = url
 	let socket = io('ws://' + url, {
 		'connect timeout': 5000,
 		'flash policy port': 10843
@@ -341,6 +365,47 @@ function gameJoin(username) {
 			$('#reqAppContainer').html(`<h1 class="req">Game starting...</h1><br><h3>We are generating the map.</h3>`)
 		})
 
+		socket.on('game_over', (player) => {
+			socket.emit('leave_game')
+			Swal.fire({
+				title: 'Game Over!',
+				html: `<p style="display: inline">You were defeated by</p><p style="display: inline" class="reqplayer color${player.color}">${player.username}</p>`,
+				icon: 'warning',
+				showDenyButton: true,
+				showCancelButton: false,
+				allowOutsideClick: false,
+				confirmButtonText: 'Replay',
+				denyButtonText: `Quit`,
+			}).then((result) => {
+				/* Read more about isConfirmed, isDenied below */
+				if (result.isConfirmed) {
+					reJoinGame()
+				} else {
+					window.location.href = 'index.html'
+				}
+			})
+		})
+
+		socket.on('game_ended', (winner_id) => {
+			socket.emit('leave_game')
+			Swal.fire({
+				title: winner_id === window.playerId ? 'You won!' : 'Game Ended.',
+				icon: winner_id === window.playerId ? 'success' : 'info',
+				showDenyButton: true,
+				showCancelButton: false,
+				allowOutsideClick: false,
+				confirmButtonText: 'Replay',
+				denyButtonText: `Quit`,
+			}).then((result) => {
+				/* Read more about isConfirmed, isDenied below */
+				if (result.isConfirmed) {
+					reJoinGame()
+				} else {
+					window.location.href = 'index.html'
+				}
+			})
+		})
+
 		socket.on('init_game_map', (width, height) => {
 			window.mapWidth = width, window.mapHeight = height
 			$('#reqAppContainer').html(`<div class="ui segment" style="background-color: rgb(89, 105, 117, 70%)!important;"><table id="game-map"></table></div>`)
@@ -352,6 +417,22 @@ function gameJoin(username) {
 					$row.append(`<td id='td${i}-${j}' onclick="handleClick(${i}, ${j})"></td>`);
 				}
 			}
+			$('.reqmessagesender').hide()
+			$('.reqmessageboard').before(`
+			<div class="reqleaderboard">
+				<div class="ui segment">
+					<table class="ui very basic table unstackable">
+					<thead>
+						<tr>
+							<th>Player</th>
+							<th>Army</th>
+							<th>Land</th>
+						</tr>
+					</thead>
+					<tbody id="reqLeaderBoardContent"></tbody>
+				</table>
+				</div>
+			</div>`)
 			window.turn = 1
 			$(document).keydown((event) => {
 				if (!window.selectedTd) return
@@ -393,6 +474,18 @@ function gameJoin(username) {
 						window.selectedTd = newPoint
 					}
 				}
+			})
+		})
+
+		socket.on('leaderboard', leaderBoard => {
+			$('#reqLeaderBoardContent').empty()
+			leaderBoard.forEach(player => {
+				let $tr = $(`<tr><td class="reqplayer color${player.color}">${player.username}</td>
+				<td>${player.army}</td><td>${player.land}</td>`)
+				if (player.land === 0) {
+					$tr.addClass('red')
+				}
+				$('#reqLeaderBoardContent').append($tr)
 			})
 		})
 

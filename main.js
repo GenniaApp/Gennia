@@ -57,7 +57,7 @@ async function handleDisconnectInGame(player) {
 }
 
 async function handleDisconnectInRoom(player, io) {
-  io.local.emit('room_message', player, 'quit.')
+  io.local.emit('room_message', player.trans(), 'quit.')
   let newPlayers = []
   for (let i = 0, c = 0; i < global.players.length; ++i) {
     if (global.players[i].id !== player.id) {
@@ -66,13 +66,13 @@ async function handleDisconnectInRoom(player, io) {
     } else {
       if (global.players[i].forceStart) {
         --global.forceStartNum
-        io.local.emit('force-start-changed', global.forceStartNum)
+        io.local.emit('force_start_changed', global.forceStartNum)
       }
     }
   }
   global.players = newPlayers
   if (global.players.length > 0) global.players[0].setRoomHost(true)
-  io.local.emit('players_changed', global.players)
+  io.local.emit('players_changed', global.players.map(player => player.trans()))
 }
 
 async function getPlayerIndex(playerId) {
@@ -114,11 +114,7 @@ async function handleGame(io) {
     io.local.emit('init_game_map', global.map.width, global.map.height)
 
     for (let [id, socket] of io.sockets.sockets) {
-      socket.on('room_message', async (message) => {
-        io.local.emit('room_message_single', global.players[playerIndex], ': ' + message, global.turn)
-      })
       socket.on('attack', async (from, to, isHalf) => {
-
         let playerIndex = await getPlayerIndexBySocket(id)
         let player = global.players[playerIndex]
         if (player.operatedTurn < global.map.turn && global.map.commandable(player, from, to)) {
@@ -133,39 +129,61 @@ async function handleGame(io) {
         } else {
           socket.emit('attack_failure', from, to)
         }
-     })
+      })
     }
 
     let updTime = 500 / speedArr[global.gameConfig.gameSpeed]
-    setInterval(async () => {
-      for (let general of global.generals) {
-        let block = global.map.getBlock(general)
+    let gameLoop = setInterval(async () => {
+      try {
 
-        let blockPlayerIndex = await getPlayerIndex(block.player.id)
-        let generalPlayerIndex = await getPlayerIndex(general.player.id)
-        if (blockPlayerIndex !== generalPlayerIndex && global.players[generalPlayerIndex].isDead === false) {
-          console.log(block.player.username, 'captured', general.player.username)
-          io.local.emit('captured',
-            { color: block.player.color, username: block.player.username },
-            { color: general.player.color, username: block.player.username })
-          global.players[generalPlayerIndex].isDead = true
-
-          for (let block of global.players[generalPlayerIndex].land) {
-            global.map.transferBlock(block, global.players[blockPlayerIndex])
-            global.players[blockPlayerIndex].land.push(global.map.getBlock(block))
+        for (let general of global.generals) {
+          let block = global.map.getBlock(general)
+  
+          let blockPlayerIndex = await getPlayerIndex(block.player.id)
+          let generalPlayerIndex = await getPlayerIndex(general.player.id)
+          if (blockPlayerIndex !== generalPlayerIndex && global.players[generalPlayerIndex].isDead === false) {
+            console.log(block.player.username, 'captured', general.player.username)
+            io.local.emit('captured',block.player.trans(),general.player.trans())
+            io.sockets.sockets.get(general.player.socket_id).emit('game_over',block.player.trans())
+            global.players[generalPlayerIndex].isDead = true
+  
+            global.players[generalPlayerIndex].land.forEach(block => {
+              global.map.transferBlock(block, global.players[blockPlayerIndex])
+              global.players[blockPlayerIndex].winLand(block)
+            })
+            global.players[generalPlayerIndex].land.length = 0
           }
-          global.players[generalPlayerIndex].land.length = 0
         }
-      }
-
-      for (let [id, socket] of io.sockets.sockets) {
-        let playerIndex = await getPlayerIndexBySocket(id)
-        let view = await global.map.getViewPlayer(global.players[playerIndex])
-        view = JSON.stringify(view)
-        socket.emit('game_update', view, global.map.width, global.map.height, global.turn)
-      }
-      global.map.updateTurn()
-      global.map.updateUnit()
+        let alivePlayer = null, countAlive = 0
+        for (let a of global.players)
+          if (!a.isDead) alivePlayer = a, ++countAlive
+        if (countAlive === 1) {
+          io.local.emit('game_ended', alivePlayer.id)
+          global.gameStarted = false
+          clearInterval(gameLoop)
+        }
+  
+        let leaderBoard = global.players.map(player => {
+          return {
+            color: player.color,
+            username: player.username,
+            army: player.getTotalUnit(),
+            land: player.getNumberOfLand()
+          }
+        }).sort((a, b) => { b.armies - a.armies })
+  
+  
+        io.local.emit('leaderboard', leaderBoard)
+  
+        for (let [id, socket] of io.sockets.sockets) {
+          let playerIndex = await getPlayerIndexBySocket(id)
+          let view = await global.map.getViewPlayer(global.players[playerIndex])
+          view = JSON.stringify(view)
+          socket.emit('game_update', view, global.map.width, global.map.height, global.turn)
+        }
+        global.map.updateTurn()
+        global.map.updateUnit()
+      } catch (e) { console.log(e) }
     }, updTime)
   }
 }
@@ -188,7 +206,7 @@ async function createWindow() {
   mainWindow.loadFile('index.html')
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   mainWindow.on("maximize", async () => {
     mainWindow.webContents.send('window-maxed', true)
@@ -257,7 +275,7 @@ async function createWindow() {
               let playerIndex = await getPlayerIndex(playerId)
               player = global.players[playerIndex]
               global.players[playerIndex].socket_id = socket.id
-              io.local.emit('room_message', player, 're-joined the lobby.')
+              io.local.emit('room_message', player.trans(), 're-joined the lobby.')
             }
           } catch (e) {
             socket.emit('error', 'An unknown error occurred: ' + e.message, e.stack)
@@ -279,15 +297,15 @@ async function createWindow() {
           global.players.push(player)
           let playerIndex = global.players.length - 1
 
-          io.local.emit('room_message', player, 'joined the lobby.')
-          io.local.emit('players_changed', global.players)
+          io.local.emit('room_message', player.trans(), 'joined the lobby.')
+          io.local.emit('players_changed', global.players.map(player => player.trans()))
 
           if (global.players.length === 1) {
             console.log(global.players[playerIndex])
             global.players[playerIndex].setRoomHost(true)
           }
           global.players[playerIndex].username = username
-          io.local.emit('players_changed', global.players)
+          io.local.emit('players_changed', global.players.map(player => player.trans()))
 
           // Only emit to this player so it will get the latest status
           socket.emit('force_start_changed', global.forceStartNum)
@@ -308,7 +326,7 @@ async function createWindow() {
             if (newHost !== -1) {
               global.players[currentHost].setRoomHost(false)
               global.players[newHost].setRoomHost(true)
-              io.local.emit('players_changed', global.players)
+              io.local.emit('players_changed', global.players.map(player => player.trans()))
             }
           }
         })
@@ -318,7 +336,7 @@ async function createWindow() {
             console.log('Changing game speed to ' + speedArr[value] + 'x')
             global.gameConfig.gameSpeed = value
             io.local.emit('game_config_changed', global.gameConfig)
-            io.local.emit('room_message', player, `changed the game speed to ${speedArr[value]}x.`)
+            io.local.emit('room_message', player.trans(), `changed the game speed to ${speedArr[value]}x.`)
           } else {
             socket.emit('error', 'Changement was failed', 'You are not the game host.')
           }
@@ -329,7 +347,7 @@ async function createWindow() {
             console.log('Changing map width to' + value)
             global.gameConfig.mapWidth = value
             io.local.emit('game_config_changed', global.gameConfig)
-            io.local.emit('room_message', player, `changed the map width to ${value}.`)
+            io.local.emit('room_message', player.trans(), `changed the map width to ${value}.`)
           } else {
             socket.emit('error', 'Changement was failed', 'You are not the game host.')
           }
@@ -340,7 +358,7 @@ async function createWindow() {
             console.log('Changing map height to' + value)
             global.gameConfig.mapHeight = value
             io.local.emit('game_config_changed', global.gameConfig)
-            io.local.emit('room_message', player, `changed the map height to ${value}.`)
+            io.local.emit('room_message', player.trans(), `changed the map height to ${value}.`)
           } else {
             socket.emit('error', 'Changement was failed', 'You are not the game host.')
           }
@@ -351,7 +369,7 @@ async function createWindow() {
             console.log('Changing mountain to' + value)
             global.gameConfig.mountain = value
             io.local.emit('game_config_changed', global.gameConfig)
-            io.local.emit('room_message', player, `changed the mountain to ${value}.`)
+            io.local.emit('room_message', player.trans(), `changed the mountain to ${value}.`)
           } else {
             socket.emit('error', 'Changement was failed', 'You are not the game host.')
           }
@@ -362,7 +380,7 @@ async function createWindow() {
             console.log('Changing city to' + value)
             global.gameConfig.city = value
             io.local.emit('game_config_changed', global.gameConfig)
-            io.local.emit('room_message', player, `changed the city to ${value}.`)
+            io.local.emit('room_message', player.trans(), `changed the city to ${value}.`)
           } else {
             socket.emit('error', 'Changement was failed', 'You are not the game host.')
           }
@@ -373,7 +391,7 @@ async function createWindow() {
             console.log('Changing swamp to' + value)
             global.gameConfig.swamp = value
             io.local.emit('game_config_changed', global.gameConfig)
-            io.local.emit('room_message', player, `changed the swamp to ${value}.`)
+            io.local.emit('room_message', player.trans(), `changed the swamp to ${value}.`)
           } else {
             socket.emit('error', 'Changement was failed', 'You are not the game host.')
           }
@@ -384,19 +402,23 @@ async function createWindow() {
             console.log('Changing max players to' + value)
             global.gameConfig.maxPlayers = value
             io.local.emit('game_config_changed', global.gameConfig)
-            io.local.emit('room_message', player, `changed the max player num to ${value}.`)
+            io.local.emit('room_message', player.trans(), `changed the max player num to ${value}.`)
           } else {
             socket.emit('error', 'Changement was failed', 'You are not the game host.')
           }
         })
 
         socket.on('player_message', async (message) => {
-          io.local.emit('room_message', player, ': ' + message)
+          io.local.emit('room_message', player.trans(), ': ' + message)
         })
 
         socket.on('disconnect', async () => {
           if (!global.gameStarted)
             await handleDisconnectInRoom(player, io)
+        })
+
+        socket.on('leave_game', async () => {
+          await handleDisconnectInRoom(player, io)
         })
 
         socket.on('force_start', async () => {
@@ -408,7 +430,7 @@ async function createWindow() {
             global.players[playerIndex].forceStart = true
             ++global.forceStartNum
           }
-          io.local.emit('players_changed', global.players)
+          io.local.emit('players_changed', global.players.map(player => player.trans()))
           io.local.emit('force_start_changed', global.forceStartNum)
 
           if (global.forceStartNum >= forceStartOK[global.players.length]) {

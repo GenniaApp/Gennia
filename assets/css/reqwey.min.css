@@ -79,7 +79,7 @@ span {
 	top: 0;
 	width: 100%;
 	height: 55px;
-	z-index: 99;
+	z-index: 1061;
 	background-color: rgba(255,255,255,70%);
 	/* background: -webkit-linear-gradient(#c7d7fc, #e4efff) !important; */
 	-webkit-app-region: drag
@@ -90,7 +90,7 @@ span {
 	bottom: 0;
 	width: 100%;
 	height: 30px;
-	z-index: 99;
+	z-index: 1061;
 	background-color: rgba(255,255,255,70%);
 	/* background: -webkit-linear-gradient(#c7d7fc, #e4efff) !important; */
 	-webkit-app-region: drag
@@ -101,21 +101,21 @@ span {
 	position: absolute;
 	left: 5px;
 	top: 10px;
-	z-index: 100;
+	z-index: 1062;
 }
 
 .reqleftfooter {
 	position: absolute;
 	left: 5px;
 	bottom: 5px;
-	z-index: 100;
+	z-index: 1062;
 }
 
 .reqrightfooter {
 	position: absolute;
 	right: 5px;
 	bottom: 5px;
-	z-index: 100;
+	z-index: 1062;
 }
 
 .reqcontrols {
@@ -283,12 +283,12 @@ svg {
 	right: 5px;
 	bottom: 35px;
 	z-index: 101;
-	min-width: 300px;
+	min-width: 250px;
 	height: 100px;
 }
 .reqmessageboard .ui.segment {
 	z-index: 101;
-	min-width: 300px;
+	min-width: 250px;
 	height: 100px;
 	overflow-y: auto;
 	overflow-x: fixed;
@@ -322,6 +322,18 @@ svg {
 }
 .reqmessageboard.expand .ui.segment {
 	height: 500px;
+}
+
+.reqleaderboard {
+	position: absolute;
+	right: 5px;
+	top: 62px;
+	z-index: 101;
+	min-width: 250px;
+}
+.reqleaderboard .ui.segment {
+	z-index: 101;
+	min-width: 250px;
 }
 
 .reqbuttons {
@@ -638,6 +650,8 @@ blockquote {
 
 #game-map td.obstacle {
   background-image: url("../img/obstacle.png");
+  border: 1px solid transparent;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 #game-map td.swamp {
