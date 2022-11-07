@@ -1,4 +1,8 @@
-# Gennia
+<h1 align="center">
+  <img src="assets/img/favicon.png" style="height: 90px;"alt="Gennia">
+  <br>
+  Gennia
+</h1>
 
 > Yet another portable generals.io server & client
 
