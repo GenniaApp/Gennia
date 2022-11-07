@@ -163,6 +163,7 @@ async function handleGame(io) {
         if (countAlive === 1) {
           io.local.emit('game_ended', alivePlayer.id)
           global.gameStarted = false
+          global.forceStartNum = 0
           clearInterval(gameLoop)
         }
 
