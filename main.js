@@ -51,9 +51,9 @@ async function handleInput(command) {
   // global.game.handleInput(this, command)
 }
 
-async function handleDisconnectInGame(player) {
-  // console.info(`Remove player | ${player.id}`)
-  // global.game.tryToRemovePlayer.push(player)
+async function handleDisconnectInGame(player, io) {
+  io.local.emit('room_message', player.trans(), 'quit.')
+  global.players = global.players.filter(p => p != player)
 }
 
 async function handleDisconnectInRoom(player, io) {
@@ -81,6 +81,7 @@ async function getPlayerIndex(playerId) {
       return i
     }
   }
+  return -1
 }
 
 async function getPlayerIndexBySocket(socketId) {
@@ -89,6 +90,7 @@ async function getPlayerIndexBySocket(socketId) {
       return i
     }
   }
+  return -1
 }
 
 async function handleGame(io) {
@@ -108,7 +110,7 @@ async function handleGame(io) {
       global.gameConfig.swamp,
       global.players
     )
-    global.generals = await global.map.generate()
+    global.players = await global.map.generate()
     global.mapGenerated = true
 
     io.local.emit('init_game_map', global.map.width, global.map.height)
@@ -136,24 +138,25 @@ async function handleGame(io) {
     let gameLoop = setInterval(async () => {
       try {
 
-        for (let general of global.generals) {
-          let block = global.map.getBlock(general)
-  
+        global.players.forEach(async (player) => {
+          let block = global.map.getBlock(player.king)
+
           let blockPlayerIndex = await getPlayerIndex(block.player.id)
-          let generalPlayerIndex = await getPlayerIndex(general.player.id)
-          if (blockPlayerIndex !== generalPlayerIndex && global.players[generalPlayerIndex].isDead === false) {
-            console.log(block.player.username, 'captured', general.player.username)
-            io.local.emit('captured',block.player.trans(),general.player.trans())
-            io.sockets.sockets.get(general.player.socket_id).emit('game_over',block.player.trans())
-            global.players[generalPlayerIndex].isDead = true
+          if (blockPlayerIndex !== -1) {
+            if (block.player !== player && player.isDead === false) {
+              console.log(block.player.username, 'captured', player.username)
+              io.local.emit('captured', block.player.trans(), player.trans())
+              io.sockets.sockets.get(player.socket_id).emit('game_over', block.player.trans())
+              player.isDead = true
   
-            global.players[generalPlayerIndex].land.forEach(block => {
-              global.map.transferBlock(block, global.players[blockPlayerIndex])
-              global.players[blockPlayerIndex].winLand(block)
-            })
-            global.players[generalPlayerIndex].land.length = 0
+              player.land.forEach(block => {
+                global.map.transferBlock(block, global.players[blockPlayerIndex])
+                global.players[blockPlayerIndex].winLand(block)
+              })
+              player.land.length = 0
+            }
           }
-        }
+        })
         let alivePlayer = null, countAlive = 0
         for (let a of global.players)
           if (!a.isDead) alivePlayer = a, ++countAlive
@@ -162,24 +165,27 @@ async function handleGame(io) {
           global.gameStarted = false
           clearInterval(gameLoop)
         }
-  
+
         let leaderBoard = global.players.map(player => {
+          let data = global.map.getTotal(player)
           return {
             color: player.color,
             username: player.username,
-            army: player.getTotalUnit(),
-            land: player.getNumberOfLand()
+            army: data.army,
+            land: data.land
           }
-        }).sort((a, b) => { b.armies - a.armies })
-  
-  
+        }).sort((a, b) => { return b.army - a.army || b.land - a.land })
+
+
         io.local.emit('leaderboard', leaderBoard)
-  
+
         for (let [id, socket] of io.sockets.sockets) {
           let playerIndex = await getPlayerIndexBySocket(id)
-          let view = await global.map.getViewPlayer(global.players[playerIndex])
-          view = JSON.stringify(view)
-          socket.emit('game_update', view, global.map.width, global.map.height, global.turn)
+          if (playerIndex !== -1) {
+            let view = await global.map.getViewPlayer(global.players[playerIndex])
+            view = JSON.stringify(view)
+            socket.emit('game_update', view, global.map.width, global.map.height, global.turn)
+          }
         }
         global.map.updateTurn()
         global.map.updateUnit()
@@ -206,7 +212,7 @@ async function createWindow() {
   mainWindow.loadFile('index.html')
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   mainWindow.on("maximize", async () => {
     mainWindow.webContents.send('window-maxed', true)
@@ -418,7 +424,7 @@ async function createWindow() {
         })
 
         socket.on('leave_game', async () => {
-          await handleDisconnectInRoom(player, io)
+          await handleDisconnectInGame(player, io)
         })
 
         socket.on('force_start', async () => {

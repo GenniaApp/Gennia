@@ -70,7 +70,7 @@ class GameMap {
     }
     for (let i = 0; i < this.width; i++) {
       for (let j = 0; j < this.height; j++) {
-        if (size[this.getFather(conn, i * this.height + j)] >= .9 * (this.width * this.height - obstacleCount)) {
+        if (size[this.getFather(conn, i * this.height + j)] >= this.width * this.height - obstacleCount) {
           return true
         }
       }
@@ -85,8 +85,6 @@ class GameMap {
         this.map[i][j] = new Block(i, j, 'Plain')
       }
     }
-
-    let generals = new Array()
     // Generate the king
     for (let i = 0; i < this.kings.length; ++i) {
       let pos = null;
@@ -98,18 +96,17 @@ class GameMap {
         if (block.type !== "King") {
           let flag = true
           for (let j = 0; j < i; ++j)
-            if (calcDistance(generals[j], new Point(x, y)) <= 6) {
+            if (calcDistance(this.kings[j].king, new Point(x, y)) <= 6) {
               flag = false
               break
             }
           if (flag) {
             block.initKing(this.kings[i]);
+            this.kings[i].initKing(block)
             break;
           }
         }
       }
-      generals.push({ x: pos.x, y: pos.y, player: this.kings[i] })
-      console.log(i)
     }
     // Generate the mountain
     for (let i = 1; i <= this.mountain; ++i) {
@@ -159,11 +156,24 @@ class GameMap {
       }
       this.map[x][y].type = 'Swamp'
     }
-
+    let kings = this.kings
     return new Promise(function (resolve, reject) {
       console.log('Map generated successfully')
-      resolve(generals)
+      resolve(kings)
     })
+  }
+
+  getTotal(player) {
+    let total = 0, count = 0
+    for (let i = 0; i < this.width; ++i) {
+      for (let j = 0; j < this.height; ++j) {
+        if (this.map[i][j].player === player) {
+          total += this.map[i][j].unit
+          ++count
+        }
+      }
+    }
+    return { army: total, land: count}
   }
 
   // initMap(data) {

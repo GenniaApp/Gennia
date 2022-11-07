@@ -22,29 +22,18 @@ class Block {
     this.player.winLand(this);
   }
 
-  beNeutralized() {
-    this.unit = 0;
-    if (this.player !== null) {
-      this.player.loseLand(this);
-      this.player = null;
-    }
-  }
-
   initKing(player) {
     this.type = 'King';
     this.unit = 1;
     this.player = player;
-    this.player.winLand(this);
   }
 
   enterUnit(player, unit) {
     if (this.player === player) {
       this.unit += unit;
     } else {
-      if (this.unit > unit) {
+      if (this.unit >= unit) {
         this.unit -= unit;
-      } else if (this.unit === unit) {
-        this.beNeutralized();
       } else if (this.unit < unit) {
         this.beDominated(player, unit);
       }
