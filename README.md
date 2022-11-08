@@ -15,6 +15,7 @@
 ## Todo
 
 * Port changements
-* Add cache queue for player's input to improve gaming performance
+* Map editor
+* **Add cache queue for player's input to improve gaming performance**
 * Can add bots for the game
 * i18n support
