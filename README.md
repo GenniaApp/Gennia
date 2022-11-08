@@ -6,7 +6,11 @@
 
 > Yet another portable generals.io server & client
 
-![**Gennia**](assets/img/readme-image-1.png)
+![**Gennia Dashboard**](assets/img/readme-image-1.png)
+
+![**Gennia Lobby**](assets/img/readme-image-2.png)
+
+![**Gennia Game UI**](assets/img/readme-image-3.png)
 
 ## Todo
 
