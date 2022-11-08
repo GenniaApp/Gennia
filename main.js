@@ -59,17 +59,17 @@ async function handleDisconnectInGame(player, io) {
 async function handleDisconnectInRoom(player, io) {
   io.local.emit('room_message', player.trans(), 'quit.')
   let newPlayers = []
+  global.forceStartNum = 0
   for (let i = 0, c = 0; i < global.players.length; ++i) {
     if (global.players[i].id !== player.id) {
       global.players[i].color = c++
       newPlayers.push(global.players[i])
-    } else {
       if (global.players[i].forceStart) {
-        --global.forceStartNum
-        io.local.emit('force_start_changed', global.forceStartNum)
+        ++global.forceStartNum
       }
     }
   }
+  io.local.emit('force_start_changed', global.forceStartNum)
   global.players = newPlayers
   if (global.players.length > 0) global.players[0].setRoomHost(true)
   io.local.emit('players_changed', global.players.map(player => player.trans()))
