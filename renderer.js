@@ -366,6 +366,7 @@ function gameJoin(username) {
 		})
 
 		socket.on('game_over', (player) => {
+			$(document).unbind('keydown')
 			socket.emit('leave_game')
 			Swal.fire({
 				title: 'Game Over!',
@@ -387,6 +388,7 @@ function gameJoin(username) {
 		})
 
 		socket.on('game_ended', (winner_id) => {
+			$(document).unbind('keydown')
 			socket.emit('leave_game')
 			Swal.fire({
 				title: winner_id === window.playerId ? 'You won!' : 'Game Ended.',
@@ -434,7 +436,7 @@ function gameJoin(username) {
 				</div>
 			</div>`)
 			window.turn = 1
-			$(document).keydown((event) => {
+			$(document).bind('keydown', (event) => {
 				if (!window.selectedTd) return
 
 				if (event.which === 65 || event.which === 37) { // Left
