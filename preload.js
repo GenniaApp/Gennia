@@ -43,7 +43,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   console.log(getIPAdress());
   // Get IP
-  document.getElementById('leftfooter').innerHTML = `Gennia V1.0.1`
+  document.getElementById('leftfooter').innerHTML = `Gennia V1.0.2`
   document.getElementById('rightfooter').innerHTML = `Your IP: ${getIPAdress()}`;
 
   // Toggle Dashboard
