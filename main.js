@@ -428,9 +428,12 @@ async function createWindow() {
         socket.on('disconnect', async () => {
           if (!global.gameStarted)
             await handleDisconnectInRoom(player, io)
+          else
+            await handleDisconnectInGame(player, io)
         })
 
         socket.on('leave_game', async () => {
+          socket.disconnect()
           await handleDisconnectInGame(player, io)
         })
 

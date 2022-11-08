@@ -370,7 +370,7 @@ function gameJoin(username) {
 			socket.emit('leave_game')
 			Swal.fire({
 				title: 'Game Over!',
-				html: `<p style="display: inline">You were defeated by</p><p style="display: inline" class="reqplayer color${player.color}">${player.username}</p>`,
+				html: `<p style="display: inline">You were defeated by </p><p style="display: inline" class="reqplayer color${player.color}">${player.username}</p>`,
 				icon: 'warning',
 				showDenyButton: true,
 				showCancelButton: false,
