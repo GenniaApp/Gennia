@@ -14,6 +14,7 @@ const { isObject } = require('util')
 const GameMap = require("./src/server/map")
 const Point = require("./src/server/point")
 const Player = require("./src/server/player")
+const xss = require('xss')
 
 const speedArr = [0.25, 0.5, 0.75, 1, 2, 3, 4]
 const forceStartOK = [1, 2, 2, 3, 3, 4, 5, 5, 6]
@@ -253,8 +254,8 @@ async function createWindow() {
     if (!val || !val.length) {
       dialog.showErrorBox('You haven\'t set up the username!', 'Please try again.')
     } else {
-      global.username = val
-      mainWindow.webContents.send('toggle-dashboard', val)
+      global.username = xss(val)
+      mainWindow.webContents.send('toggle-dashboard', global.username)
     }
   })
 
@@ -300,6 +301,7 @@ async function createWindow() {
             socket.emit('reject_join', 'Game is already started')
             return;
           }
+          username = xss(username)
           // This socket will be first called when the player connects the server
           let playerId = crypto.randomBytes(Math.ceil(10 / 2)).toString('hex').slice(0, 10)
           console.log("Player:", username, "playerId:", playerId)
