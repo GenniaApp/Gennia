@@ -16,6 +16,6 @@
 
 * Port changements
 * Map editor
-* **Add cache queue for player's input to improve gaming performance**
+* [Solved]~~Add cache queue for player's input to improve gaming performance~~
 * Can add bots for the game
 * i18n support
