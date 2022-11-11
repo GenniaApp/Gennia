@@ -9,6 +9,7 @@ const { contextBridge, ipcRenderer } = require('electron')
 const { getIPAdress } = require('./util')
 
 contextBridge.exposeInMainWorld('electron', {
+  queryInfo: () => { ipcRenderer.send('get-info') },
   windowMin: () => { ipcRenderer.send('window-min') },
   windowMax: () => { ipcRenderer.send('window-max') },
   windowClose: () => { ipcRenderer.send('window-close') },
@@ -18,7 +19,7 @@ contextBridge.exposeInMainWorld('electron', {
 
 window.addEventListener('DOMContentLoaded', async () => {
   console.log('content loaded');
-  
+
   // Window Controller
   let expandControl = document.getElementById('expandControl');
   let restoreControl = document.getElementById('restoreControl');
@@ -31,6 +32,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       restoreControl.style.display = 'none';
     }
   })
+
   ipcRenderer.on('window-maxed', (_, value) => {
     if (value) {
       expandControl.style.display = 'none';
@@ -41,10 +43,11 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
   })
 
-  console.log(getIPAdress());
-  // Get IP
-  document.getElementById('leftfooter').innerHTML = `Gennia V1.0.3`
-  document.getElementById('rightfooter').innerHTML = `Your IP: ${getIPAdress()}`;
+  ipcRenderer.on('get-info', (_, info) => {
+    document.getElementById('leftfooter').innerHTML = `Gennia V${info}`
+    // Get IP
+    document.getElementById('rightfooter').innerHTML = `Your IP: ${getIPAdress()}`;
+  })
 
   // Toggle Dashboard
   ipcRenderer.on('toggle-dashboard', (_, username) => {
@@ -56,7 +59,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 		<button class="fadeInUp ui fluid pink button" id="joinGame" data-tooltip="Join in an existing online game in your LAN." data-inverted="" data-position="top center" onclick="toggleJoinGame()">Join in a Game</button>
 		<div style="margin-top: 10px"></div>
 		<button class="fadeInUp ui fluid blue button" id="createServer" data-tooltip="Create a websocket gaming server that is available in your LAN." data-inverted="" data-position="bottom center" onclick="window.electron.queryServerStatus()">Create a Server</button>`
-    
+
     document.getElementById('rightfooter').innerHTML = `${username}'s IP: ${getIPAdress()}`;
 
   })

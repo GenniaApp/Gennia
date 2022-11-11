@@ -6,7 +6,7 @@
  */
 
 // Modules to control application life and create native browser window
-const { app, ipcMain, BrowserWindow, dialog } = require('electron')
+const { app, ipcMain, BrowserWindow, dialog, Tray, Menu } = require('electron')
 const path = require('path')
 const { Server } = require("socket.io")
 const crypto = require('crypto');
@@ -39,6 +39,7 @@ global.generals = new Array()
 global.forceStartNum = 0
 
 let mainWindow = null
+let appTray = null
 
 async function userSet(username) {
   // console.log('join', this)
@@ -129,7 +130,7 @@ async function handleGame(io) {
             } else {
               global.map.moveAllMovableUnit(player, from, to)
             }
-  
+
             global.players[playerIndex].operatedTurn = global.map.turn
             socket.emit('attack_success', from, to)
           } else {
@@ -153,7 +154,7 @@ async function handleGame(io) {
               io.local.emit('captured', block.player.trans(), player.trans())
               io.sockets.sockets.get(player.socket_id).emit('game_over', block.player.trans())
               player.isDead = true
-  
+
               player.land.forEach(block => {
                 global.map.transferBlock(block, global.players[blockPlayerIndex])
                 global.players[blockPlayerIndex].winLand(block)
@@ -217,8 +218,52 @@ async function createWindow() {
 
   mainWindow.loadFile('index.html')
 
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  var trayMenuTemplate = [
+    {
+      label: 'Open',
+      click: () => {
+        mainWindow.show()
+      }
+    },
+    {
+      label: 'Force Reflush',
+      role: 'forceReload'
+    },
+    {
+      label: 'Toggle DevTools',
+      click: () => {
+        mainWindow.webContents.toggleDevTools()
+      }
+    },
+    {
+      label: 'About',
+      click: () => {
+        dialog.showMessageBox({
+          type: 'info',
+          title: 'About Gennia',
+          message: 'About Gennia',
+          detail: `Version: ${app.getVersion()}\nElectron: ${process.versions.electron}\nNode.js: ${process.versions.node}\nChromium: ${process.versions.chrome}\n`
+        })
+      }
+    },
+    {
+      label: 'Quit',
+      role: 'quit'
+    }
+  ];
+
+  appTray = new Tray(path.join(__dirname, 'assets/img/favicon.png'));
+  const contextMenu = Menu.buildFromTemplate(trayMenuTemplate);
+  appTray.setToolTip('Gennia');
+  appTray.setContextMenu(contextMenu);
+
+  appTray.on('click', () => {
+    appTray.popUpContextMenu(contextMenu);
+  })
+
+  appTray.on('right-click', () => {
+    appTray.popUpContextMenu(contextMenu);
+  });
 
   mainWindow.on("maximize", async () => {
     mainWindow.webContents.send('window-maxed', true)
@@ -228,9 +273,13 @@ async function createWindow() {
     mainWindow.webContents.send('window-maxed', false)
   })
 
+  ipcMain.on("get-info", async () => {
+    mainWindow.webContents.send('get-info', app.getVersion())
+  })
+  
   // 最小化窗口（自定义导航条时）
   ipcMain.on('window-min', async () => {
-    mainWindow.minimize()
+    mainWindow.hide()
   })
 
   // 最大化窗口（自定义导航条时）
@@ -457,9 +506,6 @@ async function createWindow() {
         })
       }
     })
-
-    // // Setup the Game
-    // global.game = new Game()
   })
 
   ipcMain.on('close-server', async () => {
