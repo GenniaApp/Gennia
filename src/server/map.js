@@ -19,13 +19,13 @@ function getRandomInt(min, max) {
 
 class GameMap {
   constructor(width, height, mountain, city, swamp, kings) {
-    this.width = parseInt(kings.length * 4 + 10 * width);
-    this.height = parseInt(kings.length * 4 + 10 * height);
+    this.width = parseInt(kings.length * 2.7 + 10 * width);
+    this.height = parseInt(kings.length * 2.7 + 10 * height);
     if (mountain + city === 0) {
       this.mountain = this.city = 0
     } else {
       this.mountain = parseInt(this.width * this.height / 4 * mountain / (mountain + city))
-      this.city = parseInt(this.width * this.height / 4 * city / (mountain + city))
+      this.city = parseInt(this.width * this.height / 6 * city / (mountain + city))
       console.log("mountains", this.mountain, "cities", this.city)
     }
     this.swamp = parseInt((this.width * this.height - this.mountain - this.city) / 3 * swamp)

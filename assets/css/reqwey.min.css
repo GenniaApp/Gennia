@@ -74,7 +74,7 @@ img {
 	position: fixed;
 	top: 0;
 	width: 100%;
-	height: 55px;
+	height: 40px;
 	z-index: 1061;
 	background-color: rgba(255,255,255,70%);
 	/* background: -webkit-linear-gradient(#c7d7fc, #e4efff) !important; */
@@ -95,8 +95,13 @@ img {
 .reqtitle {
 	-webkit-app-region: no-drag;
 	position: absolute;
-	left: 5px;
-	top: 10px;
+	left: 10px;
+	top: 0px;
+	height: 40px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-family: Lato, -apple-system, 'PingFang SC', 'Source Han Sans SC', 'Noto Sans CJK SC', 'Microsoft Yahei', 'Lantinghei SC', 'Hiragino Sans GB', 'Microsoft Sans Serif', 'WenQuanYi Micro Hei', sans-serif;
 	z-index: 1062;
 }
 
@@ -121,15 +126,17 @@ img {
 }
 
 .reqtoolbar .reqcontrols div {
-	display: inline-block;
+	height: 40px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 48px;
 }
 
 .reqtoolbar svg:not(.reqreturnicon) {
 	height: 20px;
 	fill: currentColor;
-	margin: 15px;
 	width: 17px;
-	cursor: pointer;
 }
 
 .reqtoolbar .reqminicon:hover {
@@ -323,7 +330,7 @@ svg {
 .reqleaderboard {
 	position: absolute;
 	right: 5px;
-	top: 62px;
+	top: 45px;
 	z-index: 101;
 	min-width: 250px;
 }
@@ -594,8 +601,8 @@ blockquote {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 10px;
-  background-size: 23px 23px;
+  font-size: 8px;
+  background-size: 25px 25px;
 }
 
 #game-map td.selected {
@@ -626,6 +633,7 @@ blockquote {
 
 #game-map td.king,
 #game-map td.city,
+#game-map td.obstacle,
 #game-map td.plain,
 #game-map td.swamp {
   background-position: center;
