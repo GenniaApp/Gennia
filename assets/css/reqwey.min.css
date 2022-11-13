@@ -134,7 +134,7 @@ img {
 }
 
 .reqtoolbar svg:not(.reqreturnicon) {
-	height: 20px;
+	height: 15px;
 	fill: currentColor;
 	width: 17px;
 }
