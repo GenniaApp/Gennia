@@ -25,6 +25,12 @@ let Queue = (function () {
 			return item;
 		}
 
+		pop_back() {
+			let item = items.pop()
+			$(`#td${item.to.x}-${item.to.y}`).removeClass('queued')
+			return item;
+		}
+
 		front() {
 			return items[0];
 		}
@@ -148,19 +154,17 @@ function gameJoin(username) {
 	});
 
 	socket.on('reject_join', (title, message) => {
-		$.toast({
-			position: 'left top',
-			class: 'error',
+		Swal.fire({
 			title: title,
-			displayTime: 0,
-			message: message,
-			actions: [{
-				text: 'OK',
-				class: 'white',
-				click: function () {
-					window.location.href = 'index.html';
-				}
-			}]
+			text: message,
+			icon: error,
+			showDenyButton: false,
+			showCancelButton: false,
+			allowOutsideClick: false,
+			confirmButtonText: 'OK'
+		}).then((result) => {
+			/* Read more about isConfirmed, isDenied below */
+			reJoinGame()
 		})
 	})
 
@@ -173,6 +177,18 @@ function gameJoin(username) {
 	});
 
 	socket.on('disconnect', () => {
+		Swal.fire({
+			title: 'Disconnected from the server',
+			html: 'Please reflush the App.',
+			icon: 'error',
+			showDenyButton: false,
+			showCancelButton: false,
+			allowOutsideClick: false,
+			confirmButtonText: 'Quit'
+		}).then((result) => {
+			/* Read more about isConfirmed, isDenied below */
+			reJoinGame()
+		})
 		console.log('Disconnected from server.');
 	});
 
@@ -482,6 +498,8 @@ function gameJoin(username) {
 			$(document).bind('keydown', (event) => {
 				if (!window.selectedTd) return
 				if (event.which === 69) {
+					window.queue.pop_back()
+				} else if (event.which === 81) {
 					window.queue.clear()
 				} else if (event.which === 65 || event.which === 37) { // Left
 					let newPoint = { x: window.selectedTd.x, y: window.selectedTd.y - 1 }

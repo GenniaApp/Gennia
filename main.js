@@ -25,6 +25,7 @@ global.port = 9016
 global.serverRunning = false
 global.gameStarted = false
 global.map = undefined
+global.gameLoop = undefined
 global.gameConfig = {
   maxPlayers: 8,
   gameSpeed: 3,
@@ -56,6 +57,11 @@ async function handleInput(command) {
 async function handleDisconnectInGame(player, io) {
   io.local.emit('room_message', player.trans(), 'quit.')
   global.players = global.players.filter(p => p != player)
+  if (global.players.length <= 1) {
+    global.gameStarted = false
+    clearInterval(global.gameLoop)
+    io.local.emit('game_ended', global.players[0].id)
+  }
 }
 
 async function handleDisconnectInRoom(player, io) {
@@ -141,7 +147,7 @@ async function handleGame(io) {
     }
 
     let updTime = 500 / speedArr[global.gameConfig.gameSpeed]
-    let gameLoop = setInterval(async () => {
+    global.gameLoop = setInterval(async () => {
       try {
 
         global.players.forEach(async (player) => {
@@ -170,7 +176,7 @@ async function handleGame(io) {
           io.local.emit('game_ended', alivePlayer.id)
           global.gameStarted = false
           global.forceStartNum = 0
-          clearInterval(gameLoop)
+          clearInterval(global.gameLoop)
         }
 
         let leaderBoard = global.players.map(player => {
