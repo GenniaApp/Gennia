@@ -92,16 +92,22 @@ img {
 	-webkit-app-region: drag
 }
 
-.reqtitle {
-	-webkit-app-region: no-drag;
+.reqleftcontrols {
 	position: absolute;
-	left: 10px;
-	top: 0px;
+	left: 5px;
+	top: 5px;
+	z-index: 1064;
+	-webkit-app-region: no-drag
+}
+
+.reqtitle {
+	position: absolute;
+	width: 100%;
 	height: 40px;
-	display: inline-flex;
+	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-family: Lato, -apple-system, 'PingFang SC', 'Source Han Sans SC', 'Noto Sans CJK SC', 'Microsoft Yahei', 'Lantinghei SC', 'Hiragino Sans GB', 'Microsoft Sans Serif', 'WenQuanYi Micro Hei', sans-serif;
+	color:rgba(116, 95, 181) !important;
 	z-index: 1062;
 }
 
@@ -123,6 +129,7 @@ img {
 	-webkit-app-region: no-drag;
 	position: absolute;
 	right: 0;
+	z-index: 1064;
 }
 
 .reqtoolbar .reqcontrols div {
