@@ -5,6 +5,7 @@
  * 
  */
 const os = require('os');
+const { Server } = require("socket.io")
 
 module.exports = {
 	getIPAdress: () => {

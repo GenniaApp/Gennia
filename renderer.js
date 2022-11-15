@@ -5,6 +5,17 @@
  * 
  */
 
+function dirName(item) {
+	let from = item.from, to = item.to;
+	if (from.x === to.x) {
+		if (from.y < to.y) return 'right';
+		else return 'left';
+	} else {
+		if (from.x < to.x) return 'down';
+		else return 'up';
+	}
+}
+
 let Queue = (function () {
 
 	const items = new Array()
@@ -15,19 +26,18 @@ let Queue = (function () {
 
 		insert(item) {
 			console.log('Item queued: ', item.to.x, item.to.y)
-			$(`#td${item.to.x}-${item.to.y}`).addClass('queued')
 			items.push(item);
 		}
 
 		pop() {
 			let item = items.shift()
-			$(`#td${item.from.x}-${item.from.y}`).removeClass('queued')
+			$(`#td${item.from.x}-${item.from.y}`).removeClass(`queue_${dirName(item)}`)
 			return item;
 		}
 
 		pop_back() {
 			let item = items.pop()
-			$(`#td${item.to.x}-${item.to.y}`).removeClass('queued')
+			$(`#td${item.from.x}-${item.from.y}`).removeClass(`queue_${dirName(item)}`)
 			return item;
 		}
 
@@ -45,14 +55,14 @@ let Queue = (function () {
 
 		clear() {
 			items.forEach(item => {
-				$(`#td${item.to.x}-${item.to.y}`).removeClass('queued')
+				$(`#td${item.from.x}-${item.from.y}`).removeClass(`queue_${dirName(item)}`)
 			})
 			items.length = 0
 		}
 
 		print() { // Print on map
 			items.forEach(item => {
-				$(`#td${item.to.x}-${item.to.y}`).addClass('queued')
+				$(`#td${item.to.x}-${item.to.y}`).addClass(`queue_${dirName(item)}`)
 			})
 		}
 	}
@@ -101,6 +111,53 @@ function toggleJoinGame() {
 		$("#submitGameJoin").attr("class", "ui fluid submit button")
 		$("#submitGameJoin").html("Join in")
 	})
+}
+function toggleJoinGame() {
+	$('.reqtitle').html(`<h3>Join in a Game - Gennia</h3>`)
+	$('#reqAppContainer').html(`<div class="fadeInUp ui segment" style="text-align:center;">
+<h1 style="font-size:2.4rem!important">Input the server's URL</h1>
+<div class="ui form">
+<div class="ui field">
+	<input type="text" name="serverUrl" id="serverUrl" onkeydown="keyGameJoin()" placeholder="Server URL (e.g. 192.168.1.1:9016)" value="${window.url ? window.url : ''}">
+</div>
+<div class="ui field">
+	<div class="ui ${window.url ? '' : 'disabled'} fluid submit button" id="submitGameJoin" onclick="gameJoin()">Join in</div>
+</div>
+</div>
+</div>`)
+	$("#serverUrl").bind("input change", () => {
+		$("#submitGameJoin").attr("class", "ui fluid submit button")
+		$("#submitGameJoin").html("Join in")
+	})
+}
+function toggleServerConfig() {
+	(async () => {
+		window.electron.initServerConfig()
+		const { value: formValues } = await Swal.fire({
+			title: 'Server Settings',
+			html:
+				`<div class="ui form">
+					<div class="ui fields">
+						<div class="ui twelve wide field">
+							<label for="serverName">Server Name</label>
+							<input type="text" name="serverName" id="serverName" placeholder="Your server name">
+						</div>
+						<div class="ui four wide field">
+							<label for="port">Port</label>
+							<input type="text" name="port" id="port" placeholder="Port number", value="9016">
+						</div>
+					</div>
+				</div>`,
+			focusConfirm: false,
+			preConfirm: () => {
+				return { name: $('#serverName').val(), port: $('#port').val() }
+			}
+		})
+		
+		if (formValues) {
+			window.electron.changeServerConfig(formValues)
+		}
+	})()
 }
 function changeSetting(gameConfig) {
 	$('#gameSpeed').slider('set value', gameConfig.gameSpeed, false)
@@ -168,6 +225,11 @@ function gameJoin(username) {
 		})
 	})
 
+	socket.on('server_info', (name, version) => {
+		$('#serverName').text(name);
+		$('#serverVersion').text(version)
+	})
+
 	socket.on('connect_error', (error) => {
 		console.log('\nConnection Failed: ' + error);
 		$('#submitGameJoin').attr('class', 'ui disabled fluid red button');
@@ -177,19 +239,21 @@ function gameJoin(username) {
 	});
 
 	socket.on('disconnect', () => {
-		Swal.fire({
-			title: 'Disconnected from the server',
-			html: 'Please reflush the App.',
-			icon: 'error',
-			showDenyButton: false,
-			showCancelButton: false,
-			allowOutsideClick: false,
-			confirmButtonText: 'Quit'
-		}).then((result) => {
-			/* Read more about isConfirmed, isDenied below */
-			reJoinGame()
-		})
-		console.log('Disconnected from server.');
+		if (!window.leaved_game) {
+			Swal.fire({
+				title: 'Disconnected from the server',
+				html: 'Please reflush the App.',
+				icon: 'error',
+				showDenyButton: false,
+				showCancelButton: false,
+				allowOutsideClick: false,
+				confirmButtonText: 'Quit'
+			}).then((result) => {
+				/* Read more about isConfirmed, isDenied below */
+				reJoinGame()
+			})
+			console.log('Disconnected from server.');
+		}
 	});
 
 	socket.on('reconnect', () => {
@@ -210,11 +274,11 @@ function gameJoin(username) {
 		// set up the room ui
 		$('.reqtitle').html(`<h3>Gaming Room - Gennia</h3>`)
 		$('#reqAppContainer').html(`
-		<h1 class="fadeInDown" style="font-size:2.4rem!important">Welcome to <p style="display: inline" class="req"
-				id="username">Gennia</p> Room
-		</h1>
-		<h3 class="fadeInDown" style="color: #818181!important">Share this url to your friends so that they can join
-			in:<code>${url}</code></h3>
+		<h1 id="serverName" class="fadeInDown"></h1>
+		<h4 class="fadeInDown" style="color: #818181!important">
+		Server version: <p class="req" id="serverVersion" style="display: inline"></p><br />
+		Share this url to your friends so that they can join
+			in:<code>${url}</code></h4>
 
 		<div class="ui top attached block header title" style="color: #d12d9c;"><svg
 				style="display: inline-block;font-size: inherit;height: 1em;overflow: visible;vertical-align: -0.125em;font-size: 13px;margin-right:.75rem"
@@ -414,6 +478,7 @@ function gameJoin(username) {
 			$('#messageContent').append(`<span class="reqplayer color${player.color} style="display: inline">${player.username}</span>&nbsp;<p style="display: inline;">${message}</p><br>`)
 		})
 
+		socket.emit('query_server_info')
 		window.username = $('#rightfooter').html().split("'s IP: ")[0]
 		socket.emit('set_username', window.username);
 
@@ -425,6 +490,7 @@ function gameJoin(username) {
 
 		socket.on('game_over', (player) => {
 			$(document).unbind('keydown')
+			window.leaved_game = true
 			socket.emit('leave_game')
 			Swal.fire({
 				title: 'Game Over!',
@@ -447,6 +513,7 @@ function gameJoin(username) {
 
 		socket.on('game_ended', (winner_id) => {
 			$(document).unbind('keydown')
+			window.leaved_game = true
 			socket.emit('leave_game')
 			Swal.fire({
 				title: winner_id === window.playerId ? 'You won!' : 'Game Ended.',
@@ -508,6 +575,7 @@ function gameJoin(username) {
 						window.queue.insert({ from: window.selectedTd, to: newPoint, half: window.selectedTd.half})
 						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).removeClass(`selected`)
 						$(`#td${newPoint.x}-${newPoint.y}`).addClass(`selected`)
+						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).addClass(`queue_left`)
 						window.selectedTd = newPoint
 					}
 				} else if (event.which === 87 || event.which === 38) { // Up
@@ -517,6 +585,7 @@ function gameJoin(username) {
 						window.queue.insert({ from: window.selectedTd, to: newPoint, half: window.selectedTd.half})
 						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).removeClass(`selected`)
 						$(`#td${newPoint.x}-${newPoint.y}`).addClass(`selected`)
+						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).addClass(`queue_up`)
 						window.selectedTd = newPoint
 					}
 				} else if (event.which === 68 || event.which === 39) { // Right
@@ -526,6 +595,7 @@ function gameJoin(username) {
 						window.queue.insert({ from: window.selectedTd, to: newPoint, half: window.selectedTd.half})
 						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).removeClass(`selected`)
 						$(`#td${newPoint.x}-${newPoint.y}`).addClass(`selected`)
+						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).addClass(`queue_right`)
 						window.selectedTd = newPoint
 					}
 				} else if (event.which === 83 || event.which === 40) { // Down
@@ -535,6 +605,7 @@ function gameJoin(username) {
 						window.queue.insert({ from: window.selectedTd, to: newPoint, half: window.selectedTd.half})
 						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).removeClass(`selected`)
 						$(`#td${newPoint.x}-${newPoint.y}`).addClass(`selected`)
+						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).addClass(`queue_down`)
 						window.selectedTd = newPoint
 					}
 				}
@@ -570,8 +641,13 @@ function gameJoin(username) {
 			for (var i = 0; i < width; ++i) {
 				for (var j = 0; j < height; ++j) {
 					var $cell = $(`#td${i}-${j}`);
-					var isQueued = false
-					if ($cell.hasClass('queued')) isQueued = true, $cell.removeClass('queued')
+					var isQueued = new Array()
+
+					if ($cell.hasClass('queue_left')) isQueued.push('queue_left'), $cell.removeClass('queue_left')
+					if ($cell.hasClass('queue_right')) isQueued.push('queue_right'), $cell.removeClass('queue_right')
+					if ($cell.hasClass('queue_up')) isQueued.push('queue_up'), $cell.removeClass('queue_up')
+					if ($cell.hasClass('queue_down')) isQueued.push('queue_down'), $cell.removeClass('queue_down')
+					
 					let inner = (!gameMap[i][j].unit) ? '' : gameMap[i][j].unit.toString()
 					if (window.selectedTd && window.selectedTd.x === i && window.selectedTd.y === j) {
 						if (window.selectedTd.half) {
@@ -588,7 +664,9 @@ function gameJoin(username) {
 							$cell.addClass(`reqblock color${gameMap[i][j].color}`)
 						}
 					}
-					if (isQueued) $cell.addClass('queued')
+					isQueued.forEach(item => {
+						$cell.addClass(item)
+					})
 				}
 			}
 		})

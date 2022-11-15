@@ -590,7 +590,12 @@ blockquote {
   table-layout: fixed;
 }
 
+#game-map tr {
+	z-index: 10;
+}
+
 #game-map td {
+	z-index: 11;
   position: relative;
   border: 1px solid black;
   width: 30px;
@@ -618,10 +623,29 @@ blockquote {
   border: 1px solid white;
 }
 
-#game-map td.queued {
-  position: relative;
-  z-index: 20;
-  border: 1px dashed white !important;
+#game-map td.queue_up::before {
+	z-index: 30;
+	position: absolute;
+	top: -10px;
+	content: '↑';
+}
+#game-map td.queue_right::before {
+	z-index: 30;
+	position: absolute;
+	right: -10px;
+	content: '→';
+}
+#game-map td.queue_down::before {
+	z-index: 30;
+	position: absolute;
+	bottom: -10px;
+	content: '↓';
+}
+#game-map td.queue_left::before {
+	z-index: 30;
+	position: absolute;
+	left: -10px;
+	content: '←';
 }
 
 #game-map td.selected:hover {

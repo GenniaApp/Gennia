@@ -10,7 +10,6 @@ const { app, ipcMain, BrowserWindow, dialog, Tray, Menu } = require('electron')
 const path = require('path')
 const { Server } = require("socket.io")
 const crypto = require('crypto');
-const { isObject } = require('util')
 const GameMap = require("./src/server/map")
 const Point = require("./src/server/point")
 const Player = require("./src/server/player")
@@ -21,7 +20,10 @@ const forceStartOK = [1, 2, 2, 3, 3, 4, 5, 5, 6]
 //                    0  1  2  3  4  5  6  7  8
 
 global.username = ''
-global.port = 9016
+global.serverConfig = {
+  name: 'Gennia Lobby',
+  port: 9016
+}
 global.serverRunning = false
 global.gameStarted = false
 global.map = undefined
@@ -57,11 +59,6 @@ async function handleInput(command) {
 async function handleDisconnectInGame(player, io) {
   io.local.emit('room_message', player.trans(), 'quit.')
   global.players = global.players.filter(p => p != player)
-  if (global.players.length <= 1) {
-    global.gameStarted = false
-    clearInterval(global.gameLoop)
-    io.local.emit('game_ended', global.players[0].id)
-  }
 }
 
 async function handleDisconnectInRoom(player, io) {
@@ -282,7 +279,7 @@ async function createWindow() {
   ipcMain.on("get-info", async () => {
     mainWindow.webContents.send('get-info', app.getVersion())
   })
-  
+
   // 最小化窗口（自定义导航条时）
   ipcMain.on('window-min', async () => {
     mainWindow.hide()
@@ -314,18 +311,21 @@ async function createWindow() {
     }
   })
 
-  ipcMain.on('query-server-status', async () => {
-    mainWindow.webContents.send('server-status', global.serverRunning)
+  ipcMain.on('change-server-config', async (_, val) => {
+    let port = val.port, name = val.name
+    global.serverConfig.port = port
+    if (name && name.length) {
+      global.serverConfig.name = xss(name)
+    }
+    mainWindow.webContents.send('config-changed')
   })
 
   ipcMain.on('create-server', async () => {
-    let io;
-    try {
-      io = new Server(global.port)
-      global.serverRunning = true
-      console.log('Server established')
-      mainWindow.webContents.send('server-created', 'ok')
-    } catch (e) { mainWindow.webContents.send('server-created', e.message) }
+    let io = new Server(global.serverConfig.port)
+    console.log('Server established')
+    mainWindow.webContents.send('server-created', global.serverConfig.port)
+    // Error will be caught at process.on('uncaughtException')
+
     // Listen for socket.io connections
 
     // io.on('connect', async (socket) => {
@@ -334,6 +334,10 @@ async function createWindow() {
     io.on('connection', async (socket) => {
       if (global.players.length >= global.gameConfig.maxPlayers) socket.emit('reject_join', 'The room is full.')
       else {
+        socket.on('query_server_info', async () => {
+          socket.emit('server_info', global.serverConfig.name, `GenniaApp ${app.getVersion()}`)
+        })
+
         let player;
 
         socket.on('reconnect', async (playerId) => {
@@ -542,3 +546,11 @@ app.on('window-all-closed', function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+process.on('uncaughtException', async (err) => {
+  if (err.errno === -4091) { // EADDRINUSE
+    mainWindow.webContents.send('server-error', err)
+    dialog.showErrorBox('Server creation failed', 'The port is already in use.\nPlease try again')
+  }
+  console.log(err);
+});
