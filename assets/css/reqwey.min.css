@@ -297,7 +297,7 @@ svg {
 	height: 100px;
 }
 .reqmessageboard .ui.segment {
-	z-index: 101;
+	z-index: 102;
 	min-width: 250px;
 	height: 100px;
 	overflow-y: auto;
@@ -307,7 +307,7 @@ svg {
 	font-family: fwzc;
 	position: absolute;
 	bottom: 0;
-	z-index: 102;
+	z-index: 103;
 	font-size: 1em;
 	width: 100%;
 	margin: 0;
@@ -590,12 +590,7 @@ blockquote {
   table-layout: fixed;
 }
 
-#game-map tr {
-	z-index: 10;
-}
-
 #game-map td {
-	z-index: 11;
   position: relative;
   border: 1px solid black;
   width: 30px;
@@ -610,7 +605,6 @@ blockquote {
   text-shadow: 0 0 2px black;
   opacity: 1;
   padding: 0;
-  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 8px;
@@ -619,33 +613,40 @@ blockquote {
 
 #game-map td.selected {
   position: relative;
-  z-index: 20;
   border: 1px solid white;
 }
 
 #game-map td.queue_up::before {
 	z-index: 30;
 	position: absolute;
-	top: -10px;
+	top: -18px;
+	left: 6px;
 	content: '↑';
+	font-size: 1.2rem;
 }
 #game-map td.queue_right::before {
 	z-index: 30;
 	position: absolute;
-	right: -10px;
+	top: -1.5px;
+	right: -9px;
 	content: '→';
+	font-size: 1.2rem;
 }
 #game-map td.queue_down::before {
 	z-index: 30;
 	position: absolute;
-	bottom: -10px;
+	bottom: -20px;
+	left: 6px;
 	content: '↓';
+	font-size: 1.2rem;
 }
 #game-map td.queue_left::before {
 	z-index: 30;
 	position: absolute;
-	left: -10px;
+	left: -9px;
+	top: -1.5px;
 	content: '←';
+	font-size: 1.2rem;
 }
 
 #game-map td.selected:hover {
@@ -654,7 +655,6 @@ blockquote {
 
 #game-map td.attackable {
   position: relative;
-  z-index: 20;
   opacity: .4;
 }
 

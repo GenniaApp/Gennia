@@ -214,7 +214,7 @@ function gameJoin(username) {
 		Swal.fire({
 			title: title,
 			text: message,
-			icon: error,
+			icon: 'error',
 			showDenyButton: false,
 			showCancelButton: false,
 			allowOutsideClick: false,
@@ -386,8 +386,16 @@ function gameJoin(username) {
 					socket.emit('player_message', message)
 					$(this).val('')
 				}
-				else
-					$.toast({ class: 'error', message: `Invalid input!` });
+				else {
+					Swal.fire({
+						icon: 'error',
+						title: 'Error',
+						text: 'Invalid input!',
+						toast: true,
+						position: 'bottom-start',
+						timer: 3000
+					})
+				}
 			}
 		})
 		$('.reqforcestartemitor').bind('click', function () {
@@ -452,11 +460,13 @@ function gameJoin(username) {
 		})
 
 		socket.on('error', (title, message) => {
-			$.toast({
-				position: 'bottom attached',
-				class: 'error',
+			Swal.fire({
+				icon: 'error',
 				title: title,
-				message: message
+				text: message,
+				toast: true,
+				position: 'bottom-start',
+				timer: 3000
 			})
 			socket.emit('get_game_settings')
 		})
@@ -562,13 +572,16 @@ function gameJoin(username) {
 			</div>`)
 			window.turn = 1
 			window.queue = new Queue()
+			// let appContainer = document.getElementById('reqAppContainer')
 			$(document).bind('keydown', (event) => {
+				// var leftDist = appContainer.offsetLeft, topDist = appContainer.offsetTop
 				if (!window.selectedTd) return
 				if (event.which === 69) {
 					window.queue.pop_back()
 				} else if (event.which === 81) {
 					window.queue.clear()
 				} else if (event.which === 65 || event.which === 37) { // Left
+					// leftDist += 7;
 					let newPoint = { x: window.selectedTd.x, y: window.selectedTd.y - 1 }
 					console.log('keydown LEFT', newPoint)
 					if (withinMap(newPoint)) {
@@ -579,6 +592,7 @@ function gameJoin(username) {
 						window.selectedTd = newPoint
 					}
 				} else if (event.which === 87 || event.which === 38) { // Up
+					// topDist += 7;
 					let newPoint = { x: window.selectedTd.x - 1, y: window.selectedTd.y }
 					console.log('keydown UP', newPoint)
 					if (withinMap(newPoint)) {
@@ -589,6 +603,7 @@ function gameJoin(username) {
 						window.selectedTd = newPoint
 					}
 				} else if (event.which === 68 || event.which === 39) { // Right
+					// leftDist -= 7;
 					let newPoint = { x: window.selectedTd.x, y: window.selectedTd.y + 1 }
 					console.log('keydown RIGHT', newPoint)
 					if (withinMap(newPoint)) {
@@ -599,6 +614,7 @@ function gameJoin(username) {
 						window.selectedTd = newPoint
 					}
 				} else if (event.which === 83 || event.which === 40) { // Down
+					// topDist -= 7;
 					let newPoint = { x: window.selectedTd.x + 1, y: window.selectedTd.y }
 					console.log('keydown DOWN', newPoint)
 					if (withinMap(newPoint)) {
@@ -609,6 +625,9 @@ function gameJoin(username) {
 						window.selectedTd = newPoint
 					}
 				}
+
+				// appContainer.style.left = leftDist + 'px';
+				// appContainer.style.top = topDist + 'px';
 			})
 		})
 

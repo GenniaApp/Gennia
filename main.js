@@ -230,7 +230,9 @@ async function createWindow() {
     },
     {
       label: 'Force Reflush',
-      role: 'forceReload'
+      click: () => {
+        mainWindow.loadFile('index.html')
+      }
     },
     {
       label: 'Toggle DevTools',
