@@ -4,7 +4,8 @@
  * Copyright (c) 2022 Reqwey Lin (https://github.com/Reqwey)
  * 
  */
-
+const forceStartOK = [1, 2, 2, 3, 3, 4, 5, 5, 6]
+//                    0  1  2  3  4  5  6  7  8
 function dirName(item) {
 	let from = item.from, to = item.to;
 	if (from.x === to.x) {
@@ -37,12 +38,18 @@ let Queue = (function () {
 
 		pop_back() {
 			let item = items.pop()
-			$(`#td${item.from.x}-${item.from.y}`).removeClass(`queue_${dirName(item)}`)
-			return item;
+			if (item) {
+				$(`#td${item.from.x}-${item.from.y}`).removeClass(`queue_${dirName(item)}`)
+				return item;
+			}
 		}
 
 		front() {
 			return items[0];
+		}
+
+		end() {
+			return items[items.length - 1];
 		}
 
 		isEmpty() {
@@ -393,7 +400,7 @@ function gameJoin(username) {
 						text: 'Invalid input!',
 						toast: true,
 						position: 'bottom-start',
-						timer: 3000
+						timer: 2000
 					})
 				}
 			}
@@ -466,18 +473,18 @@ function gameJoin(username) {
 				text: message,
 				toast: true,
 				position: 'bottom-start',
-				timer: 3000
+				timer: 2000
 			})
 			socket.emit('get_game_settings')
 		})
 
 		socket.on('players_changed', (players) => {
 			$('#playerTable').empty()
-			$('#totalNum').text(players.length)
+			$('#totalNum').text(forceStartOK[players.length])
 			players.forEach(player => {
 				let userPallete = player.username
 				if (player.isRoomHost) userPallete = '<svg style="color: #FFA726; display: inline-block;font-size: inherit;height: 1em;overflow: visible;vertical-align: -0.125em;font-size: 13px;margin-right:.5rem"xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><defs><style>.fa-secondary{opacity:.4}</style></defs><path d="M544 464v32a16 16 0 0 1-16 16H112a16 16 0 0 1-16-16v-32a16 16 0 0 1 16-16h416a16 16 0 0 1 16 16z" class="fa-secondary"/><path d="M640 176a48 48 0 0 1-48 48 49 49 0 0 1-7.7-.8L512 416H128L55.7 223.2a49 49 0 0 1-7.7.8 48.36 48.36 0 1 1 43.7-28.2l72.3 43.4a32 32 0 0 0 44.2-11.6L289.7 85a48 48 0 1 1 60.6 0l81.5 142.6a32 32 0 0 0 44.2 11.6l72.4-43.4A47 47 0 0 1 544 176a48 48 0 0 1 96 0z" class="fa-primary"/></svg>' + userPallete
-				if (player.forceStart) userPallete += '🔔'
+				if (player.forceStart) userPallete += '<svg style="color: #FF9800; display: inline-block;font-size: inherit;height: 1em;overflow: visible;vertical-align: -0.125em;font-size: 13px;margin-left:.5rem" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><defs><style>.fa-secondary{opacity:.4}</style></defs><path d="M448 384c-.1 16.4-13 32-32.1 32H32.08C13 416 .09 400.4 0 384a31.25 31.25 0 0 1 8.61-21.71c19.32-20.76 55.47-52 55.47-154.29 0-77.7 54.48-139.9 127.94-155.16V32a32 32 0 1 1 64 0v20.84C329.42 68.1 383.9 130.3 383.9 208c0 102.3 36.15 133.53 55.47 154.29A31.27 31.27 0 0 1 448 384z" class="fa-secondary"/><path d="M160 448h128a64 64 0 0 1-128 0z" class="fa-primary"/></svg>'
 				$('#playerTable').append(`
 				<div class="item"><div class="content"><div class="reqheader reqplayer color${player.color}">${userPallete}</div></div></div>`)
 			});
@@ -577,9 +584,22 @@ function gameJoin(username) {
 				// var leftDist = appContainer.offsetLeft, topDist = appContainer.offsetTop
 				if (!window.selectedTd) return
 				if (event.which === 69) {
-					window.queue.pop_back()
+					let route = window.queue.pop_back()
+					if (route) {
+						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).removeClass(`selected`)
+						window.selectedTd.x = route.from.x;
+						window.selectedTd.y = route.from.y;
+						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).addClass(`selected`)
+					}
 				} else if (event.which === 81) {
-					window.queue.clear()
+					let route = window.queue.front()
+					if (route) {
+						window.queue.clear()
+						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).removeClass(`selected`)
+						window.selectedTd.x = route.from.x;
+						window.selectedTd.y = route.from.y;
+						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).addClass(`selected`)
+					}
 				} else if (event.which === 65 || event.which === 37) { // Left
 					// leftDist += 7;
 					let newPoint = { x: window.selectedTd.x, y: window.selectedTd.y - 1 }

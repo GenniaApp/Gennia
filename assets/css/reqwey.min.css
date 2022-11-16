@@ -619,33 +619,37 @@ blockquote {
 #game-map td.queue_up::before {
 	z-index: 30;
 	position: absolute;
-	top: -18px;
-	left: 6px;
+	top: -12.5%;
+	left: 50%;
 	content: '↑';
+	transform: translate(-50%, -50%);
 	font-size: 1.2rem;
 }
 #game-map td.queue_right::before {
 	z-index: 30;
 	position: absolute;
-	top: -1.5px;
-	right: -9px;
+	top: 50%;
+	right: -12.5%;
 	content: '→';
+	transform: translate(50%, -50%);
 	font-size: 1.2rem;
 }
 #game-map td.queue_down::before {
 	z-index: 30;
 	position: absolute;
-	bottom: -20px;
-	left: 6px;
+	bottom: -12.5%;
+	left: 50%;
 	content: '↓';
+	transform: translate(-50%, 50%);
 	font-size: 1.2rem;
 }
 #game-map td.queue_left::before {
 	z-index: 30;
 	position: absolute;
-	left: -9px;
-	top: -1.5px;
+	top: 50%;
+	left: -12.5%;
 	content: '←';
+	transform: translate(-50%, -50%);
 	font-size: 1.2rem;
 }
 

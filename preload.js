@@ -71,14 +71,12 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   ipcRenderer.on('server-created', (_, port) => {
     if (!window.server_error) {
-      console.log('ok')
       document.getElementById('createServer').innerText = `Server running on ${getIPAdress()}:${port}`
       document.getElementById('createServer').setAttribute('disabled', '')
     }
   })
 
   ipcRenderer.on('server-error', (_) => {
-    console.log('1111')
     window.server_error = true
     document.getElementById('createServer').innerText = `Create a Server`
     document.getElementById('createServer').removeAttribute('disabled')
