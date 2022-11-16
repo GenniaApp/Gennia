@@ -23,7 +23,9 @@ let Queue = (function () {
 
 	class Queue {
 
-		constructor() {}
+		constructor() {
+			this.lastItem = null
+		}
 
 		insert(item) {
 			console.log('Item queued: ', item.to.x, item.to.y)
@@ -32,7 +34,10 @@ let Queue = (function () {
 
 		pop() {
 			let item = items.shift()
-			$(`#td${item.from.x}-${item.from.y}`).removeClass(`queue_${dirName(item)}`)
+			if (this.lastItem) {
+				$(`#td${this.lastItem.from.x}-${this.lastItem.from.y}`).removeClass(`queue_${dirName(this.lastItem)}`)
+			}
+			this.lastItem = item;
 			return item;
 		}
 
@@ -65,6 +70,8 @@ let Queue = (function () {
 				$(`#td${item.from.x}-${item.from.y}`).removeClass(`queue_${dirName(item)}`)
 			})
 			items.length = 0
+			if (this.lastItem)
+				$(`#td${this.lastItem.from.x}-${this.lastItem.from.y}`).removeClass(`queue_${dirName(this.lastItem)}`)
 		}
 
 		print() { // Print on map
@@ -651,7 +658,11 @@ function gameJoin(username) {
 			})
 		})
 
-		socket.on('leaderboard', leaderBoard => {
+		socket.on('attack_failure', () => {
+			window.queue.clear()
+		})
+
+		socket.on('game_update', (gameMap, width, height, turn, leaderBoard) => {
 			$('#reqLeaderBoardContent').empty()
 			leaderBoard.forEach(player => {
 				let $tr = $(`<tr><td class="reqplayer color${player.color}">${player.username}</td>
@@ -661,18 +672,12 @@ function gameJoin(username) {
 				}
 				$('#reqLeaderBoardContent').append($tr)
 			})
-		})
 
-		socket.on('attack_failure', () => {
-			window.queue.clear()
-		})
-
-		socket.on('game_update', (gameMap, width, height, turn) => {
 			if (!window.queue.isEmpty()) {
 				let item = window.queue.pop()
 				socket.emit('attack', item.from, item.to, item.half)
-			} else {
-				$('td').removeClass('queued')
+			} else if (window.queue.lastItem) {
+				window.queue.clear()
 			}
 			gameMap = JSON.parse(gameMap);
 			if (turn % 2 === 0) ++window.turn

@@ -186,15 +186,12 @@ async function handleGame(io) {
           }
         }).sort((a, b) => { return b.army - a.army || b.land - a.land })
 
-
-        io.local.emit('leaderboard', leaderBoard)
-
         for (let [id, socket] of io.sockets.sockets) {
           let playerIndex = await getPlayerIndexBySocket(id)
           if (playerIndex !== -1) {
             let view = await global.map.getViewPlayer(global.players[playerIndex])
             view = JSON.stringify(view)
-            socket.emit('game_update', view, global.map.width, global.map.height, global.turn)
+            socket.emit('game_update', view, global.map.width, global.map.height, global.turn, leaderBoard)
           }
         }
         global.map.updateTurn()
