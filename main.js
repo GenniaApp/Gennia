@@ -157,7 +157,7 @@ async function handleGame(io) {
               io.local.emit('captured', block.player.trans(), player.trans())
               io.sockets.sockets.get(player.socket_id).emit('game_over', block.player.trans())
               player.isDead = true
-
+              global.map.getBlock(player.king).kingBeDominated()
               player.land.forEach(block => {
                 global.map.transferBlock(block, global.players[blockPlayerIndex])
                 global.players[blockPlayerIndex].winLand(block)

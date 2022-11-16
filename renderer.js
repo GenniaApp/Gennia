@@ -662,6 +662,10 @@ function gameJoin(username) {
 			window.queue.clear()
 		})
 
+		socket.on('captured', (player1, player2) => {
+			$('#messageContent').append(`<span class="reqplayer color${player1.color} style="display: inline">${player1.username}</span>&nbsp;captured&nbsp;<span class="reqplayer color${player2.color} style="display: inline">${player2.username}</span><br>`)
+		})
+
 		socket.on('game_update', (gameMap, width, height, turn, leaderBoard) => {
 			$('#reqLeaderBoardContent').empty()
 			leaderBoard.forEach(player => {

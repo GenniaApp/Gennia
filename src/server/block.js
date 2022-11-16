@@ -15,9 +15,12 @@ class Block {
     this.type = type;
   }
 
+  kingBeDominated() {
+    this.type = 'City'
+  }
+
   beDominated(player, unit) {
     this.unit = unit - this.unit;
-    if (this.type === 'King' && this.player !== player) this.type = 'City'
     this.player = player;
     this.player.winLand(this);
   }
