@@ -596,8 +596,8 @@ function gameJoin(username) {
 						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).html(window.selectedTd.unit)
 					} else {
 						window.selectedTd.half = true
-						window.selectedTd.unit = $td.html()
-						$td.html(`50%`)
+						window.selectedTd.unit = $(`#td${window.selectedTd.x}-${window.selectedTd.y}`).html()
+						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).html(`50%`)
 					}
 				} else if (event.which === 69) { // E to pop_back
 					let route = window.queue.pop_back()
