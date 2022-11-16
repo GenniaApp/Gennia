@@ -590,7 +590,16 @@ function gameJoin(username) {
 			$(document).bind('keydown', (event) => {
 				// var leftDist = appContainer.offsetLeft, topDist = appContainer.offsetTop
 				if (!window.selectedTd) return
-				if (event.which === 69) {
+				if (event.which === 90) { // Z to half
+					if (window.selectedTd.half) {
+						window.selectedTd.half = false
+						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).html(window.selectedTd.unit)
+					} else {
+						window.selectedTd.half = true
+						window.selectedTd.unit = $td.html()
+						$td.html(`50%`)
+					}
+				} else if (event.which === 69) { // E to pop_back
 					let route = window.queue.pop_back()
 					if (route) {
 						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).removeClass(`selected`)
@@ -598,7 +607,7 @@ function gameJoin(username) {
 						window.selectedTd.y = route.from.y;
 						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).addClass(`selected`)
 					}
-				} else if (event.which === 81) {
+				} else if (event.which === 81) { // Q to clear
 					let route = window.queue.front()
 					if (route) {
 						window.queue.clear()
