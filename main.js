@@ -312,6 +312,11 @@ async function createWindow() {
 
   ipcMain.on('change-server-config', async (_, val) => {
     let port = val.port, name = val.name
+    if (!(port > 0 && port < 65535)) {
+      dialog.showErrorBox('Server creation failed', 'The port number must be between 0 and 65535')
+      mainWindow.webContents.send('server-error', err)
+      return;
+    }
     global.serverConfig.port = port
     if (name && name.length) {
       global.serverConfig.name = xss(name)
@@ -338,21 +343,6 @@ async function createWindow() {
         })
 
         let player;
-
-        socket.on('reconnect', async (playerId) => {
-          try {
-            if (global.gameStarted) { // Allow to reconnect
-              let playerIndex = await getPlayerIndex(playerId)
-              if (playerIndex !== -1) {
-                player = global.players[playerIndex]
-                global.players[playerIndex].socket_id = socket.id
-                io.local.emit('room_message', player.trans(), 're-joined the lobby.')
-              }
-            }
-          } catch (e) {
-            socket.emit('error', 'An unknown error occurred: ' + e.message, e.stack)
-          }
-        })
 
         socket.on('set_username', async (username) => {
           if (global.gameStarted) {

@@ -32,10 +32,14 @@ let Queue = (function () {
 			items.push(item);
 		}
 
+		clearFromMap(route) {
+			$(`#td${route.from.x}-${route.from.y}`).removeClass(`queue_${dirName(route)}`)
+		}
+
 		pop() {
-			let item = items.shift()
+			let item = items.shift();
 			if (this.lastItem) {
-				$(`#td${this.lastItem.from.x}-${this.lastItem.from.y}`).removeClass(`queue_${dirName(this.lastItem)}`)
+				this.clearFromMap(this.lastItem);
 			}
 			this.lastItem = item;
 			return item;
@@ -44,7 +48,7 @@ let Queue = (function () {
 		pop_back() {
 			let item = items.pop()
 			if (item) {
-				$(`#td${item.from.x}-${item.from.y}`).removeClass(`queue_${dirName(item)}`)
+				this.clearFromMap(item);
 				return item;
 			}
 		}
@@ -67,11 +71,15 @@ let Queue = (function () {
 
 		clear() {
 			items.forEach(item => {
-				$(`#td${item.from.x}-${item.from.y}`).removeClass(`queue_${dirName(item)}`)
+				this.clearFromMap(item)
 			})
 			items.length = 0
+			this.clearLastItem()
+		}
+
+		clearLastItem() {
 			if (this.lastItem)
-				$(`#td${this.lastItem.from.x}-${this.lastItem.from.y}`).removeClass(`queue_${dirName(this.lastItem)}`)
+				this.clearFromMap(this.lastItem)
 		}
 
 		print() { // Print on map
@@ -584,7 +592,7 @@ function gameJoin(username) {
 				</table>
 				</div>
 			</div>`)
-			window.turn = 1
+			window.gameTurn = 1
 			window.queue = new Queue()
 			// let appContainer = document.getElementById('reqAppContainer')
 			$(document).bind('keydown', (event) => {
@@ -667,8 +675,17 @@ function gameJoin(username) {
 			})
 		})
 
-		socket.on('attack_failure', () => {
-			window.queue.clear()
+		socket.on('attack_failure', (from, to) => {
+			window.queue.clearLastItem()
+			while (!window.queue.isEmpty()) {
+				let point = window.queue.front().from
+				if (point.x === to.x && point.y === to.y) {
+					window.queue.pop()
+					to = point
+				} else {
+					break;
+				}
+			}
 		})
 
 		socket.on('captured', (player1, player2) => {
@@ -693,8 +710,8 @@ function gameJoin(username) {
 				window.queue.clear()
 			}
 			gameMap = JSON.parse(gameMap);
-			if (turn % 2 === 0) ++window.turn
-			$('.reqtitle').html(`<h3> Turn ${window.turn} - Gennia</h3>`)
+			if (turn % 2 === 0) ++window.gameTurn
+			$('.reqtitle').html(`<h3> Turn ${window.gameTurn} - Gennia</h3>`)
 			for (var i = 0; i < width; ++i) {
 				for (var j = 0; j < height; ++j) {
 					var $cell = $(`#td${i}-${j}`);
