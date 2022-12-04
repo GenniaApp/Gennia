@@ -306,7 +306,8 @@ async function createWindow() {
       dialog.showErrorBox('You haven\'t set up the username!', 'Please try again.')
     } else {
       global.username = xss(val)
-      mainWindow.webContents.send('toggle-dashboard', global.username)
+      mainWindow.webContents.send('toggle-dashboard', global.username, 
+        global.serverRunning, global.serverConfig.port)
     }
   })
 
