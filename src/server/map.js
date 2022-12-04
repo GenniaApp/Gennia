@@ -195,7 +195,7 @@ class GameMap {
 
   transferBlock(point, player) {
     this.map[point.x][point.y].player = player
-    this.map[point.x][point.y].unit = Math.floor(this.map[point.x][point.y].unit / 2)
+    this.map[point.x][point.y].unit = Math.ceil(this.map[point.x][point.y].unit / 2)
   }
 
   withinMap(point) {

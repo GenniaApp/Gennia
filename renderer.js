@@ -175,7 +175,7 @@ function toggleServerConfig() {
 				return { name: $('#serverName').val(), port: $('#port').val() }
 			}
 		})
-		
+
 		if (formValues) {
 			window.electron.changeServerConfig(formValues)
 		}
@@ -629,7 +629,7 @@ function gameJoin(username) {
 					let newPoint = { x: window.selectedTd.x, y: window.selectedTd.y - 1 }
 					console.log('keydown LEFT', newPoint)
 					if (withinMap(newPoint)) {
-						window.queue.insert({ from: window.selectedTd, to: newPoint, half: window.selectedTd.half})
+						window.queue.insert({ from: window.selectedTd, to: newPoint, half: window.selectedTd.half })
 						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).removeClass(`selected`)
 						$(`#td${newPoint.x}-${newPoint.y}`).addClass(`selected`)
 						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).addClass(`queue_left`)
@@ -640,7 +640,7 @@ function gameJoin(username) {
 					let newPoint = { x: window.selectedTd.x - 1, y: window.selectedTd.y }
 					console.log('keydown UP', newPoint)
 					if (withinMap(newPoint)) {
-						window.queue.insert({ from: window.selectedTd, to: newPoint, half: window.selectedTd.half})
+						window.queue.insert({ from: window.selectedTd, to: newPoint, half: window.selectedTd.half })
 						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).removeClass(`selected`)
 						$(`#td${newPoint.x}-${newPoint.y}`).addClass(`selected`)
 						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).addClass(`queue_up`)
@@ -651,7 +651,7 @@ function gameJoin(username) {
 					let newPoint = { x: window.selectedTd.x, y: window.selectedTd.y + 1 }
 					console.log('keydown RIGHT', newPoint)
 					if (withinMap(newPoint)) {
-						window.queue.insert({ from: window.selectedTd, to: newPoint, half: window.selectedTd.half})
+						window.queue.insert({ from: window.selectedTd, to: newPoint, half: window.selectedTd.half })
 						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).removeClass(`selected`)
 						$(`#td${newPoint.x}-${newPoint.y}`).addClass(`selected`)
 						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).addClass(`queue_right`)
@@ -662,7 +662,7 @@ function gameJoin(username) {
 					let newPoint = { x: window.selectedTd.x + 1, y: window.selectedTd.y }
 					console.log('keydown DOWN', newPoint)
 					if (withinMap(newPoint)) {
-						window.queue.insert({ from: window.selectedTd, to: newPoint, half: window.selectedTd.half})
+						window.queue.insert({ from: window.selectedTd, to: newPoint, half: window.selectedTd.half })
 						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).removeClass(`selected`)
 						$(`#td${newPoint.x}-${newPoint.y}`).addClass(`selected`)
 						$(`#td${window.selectedTd.x}-${window.selectedTd.y}`).addClass(`queue_down`)
@@ -721,7 +721,7 @@ function gameJoin(username) {
 					if ($cell.hasClass('queue_right')) isQueued.push('queue_right'), $cell.removeClass('queue_right')
 					if ($cell.hasClass('queue_up')) isQueued.push('queue_up'), $cell.removeClass('queue_up')
 					if ($cell.hasClass('queue_down')) isQueued.push('queue_down'), $cell.removeClass('queue_down')
-					
+
 					let inner = (!gameMap[i][j].unit) ? '' : gameMap[i][j].unit.toString()
 					if (window.selectedTd && window.selectedTd.x === i && window.selectedTd.y === j) {
 						if (window.selectedTd.half) {

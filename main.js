@@ -325,6 +325,11 @@ async function createWindow() {
   })
 
   ipcMain.on('create-server', async () => {
+    if (global.serverRunning) {
+      mainWindow.webContents.send('server-created', global.serverConfig.port)
+      return
+    }
+    global.serverRunning = true
     let io = new Server(global.serverConfig.port)
     console.log('Server established')
     mainWindow.webContents.send('server-created', global.serverConfig.port)
@@ -538,6 +543,7 @@ app.on('window-all-closed', function () {
 
 process.on('uncaughtException', async (err) => {
   if (err.errno === -4091) { // EADDRINUSE
+    global.serverRunning = false
     mainWindow.webContents.send('server-error', err)
     dialog.showErrorBox('Server creation failed', 'The port is already in use.\nPlease try again')
   }
