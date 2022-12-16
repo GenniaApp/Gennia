@@ -1,6 +1,6 @@
 {
   "name": "gennia",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Yet another portable generals.io server & client",
   "main": "main.js",
   "scripts": {
