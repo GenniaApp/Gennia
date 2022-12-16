@@ -12,8 +12,8 @@ html {
 	min-width: 1000px;
 	z-index: -10;
 	zoom: 1;
-	-webkit-filter: blur(10px);
-	filter: blur(10px);
+	/* -webkit-filter: blur(10px);
+	filter: blur(10px); */
 	background-size: cover;
 	-webkit-background-size: cover;
 	-o-background-size: cover;
