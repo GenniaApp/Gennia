@@ -71,14 +71,14 @@
 	<script src="./assets/js/jquery.min.js"></script>
 	<script src="./assets/js/semantic.min.js"></script>
 	<script src="./assets/js/sweetalert2.min.js"></script>
-	<link rel="shortcut icon" type="image/png" href="./assets/images/favicon.ico">
+	<link rel="shortcut icon" type="image/png" href="./assets/images/favicon-new.ico">
 </head>
 
 <body>
 	<div class="wrapper">
-		<div id="web_bg" style="background-image:url(./assets/img/background.webp)"></div>
+		<div id="web_bg" style="background-image:url(./assets/img/galaxy.jpg)"></div>
 	</div>
-	<div class="reqtoolbar">
+	<!-- <div class="reqtoolbar">
 		<div class="reqleftcontrols">
 			<a class="ui mini button" style="display: inline-block" href='./index.html'><svg class="reqreturnicon" style="display: inline-block;font-size: inherit;height: 1em;overflow: visible;vertical-align: -0.125em;font-size: 13px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M570.24 247.41L512 199.52V104a8 8 0 0 0-8-8h-32a8 8 0 0 0-7.95 7.88v56.22L323.87 45a56.06 56.06 0 0 0-71.74 0L5.76 247.41a16 16 0 0 0-2 22.54L14 282.25a16 16 0 0 0 22.53 2L64 261.69V448a32.09 32.09 0 0 0 32 32h128a32.09 32.09 0 0 0 32-32V344h64v104a32.09 32.09 0 0 0 32 32h128a32.07 32.07 0 0 0 32-31.76V261.67l27.53 22.62a16 16 0 0 0 22.53-2L572.29 270a16 16 0 0 0-2.05-22.59zM463.85 432H368V328a32.09 32.09 0 0 0-32-32h-96a32.09 32.09 0 0 0-32 32v104h-96V222.27L288 77.65l176 144.56z"/></svg></a> 
 		</div>
@@ -90,16 +90,16 @@
 					viewBox="0 0 384 512">
 					<path d="M376 232H8c-4.42 0-8 3.58-8 8v32c0 4.42 3.58 8 8 8h368c4.42 0 8-3.58 8-8v-32c0-4.42-3.58-8-8-8z" />
 				</svg></div>
-			<div class="reqmaxicon" id="expandControl" style="display: inline-flex" onclick=toggleWindowExpand()><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Pro 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) --><path d="M400 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-6 400H54c-3.3 0-6-2.7-6-6V86c0-3.3 2.7-6 6-6h340c3.3 0 6 2.7 6 6v340c0 3.3-2.7 6-6 6z"/></svg></div>
-			<div class="reqmaxicon" id="restoreControl" style="display: none" onclick=toggleWindowRestore()><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224 232v-95.005c0-21.382 25.851-32.09 40.971-16.971l27.704 27.704L404.888 35.515c4.686-4.686 12.284-4.686 16.971 0l22.627 22.627c4.686 4.686 4.686 12.284 0 16.971L332.272 187.326l27.704 27.704c15.119 15.119 4.411 40.97-16.971 40.97H248c-13.255 0-24-10.745-24-24zM43.112 476.485l112.213-112.213 27.704 27.704c15.12 15.119 40.971 4.411 40.971-16.971V280c0-13.255-10.745-24-24-24h-95.005c-21.382 0-32.09 25.851-16.971 40.971l27.704 27.704L3.515 436.888c-4.686 4.686-4.686 12.284 0 16.971l22.627 22.627c4.686 4.686 12.284 4.686 16.97-.001z"/></svg></div>
+			<div class="reqmaxicon" id="expandControl" style="display: inline-flex" onclick=toggleWindowExpand()><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5.75 3h12.5A2.75 2.75 0 0121 5.75v12.5A2.75 2.75 0 0118.25 21H5.75A2.75 2.75 0 013 18.25V5.75A2.75 2.75 0 015.75 3zm0 1.5c-.69 0-1.25.56-1.25 1.25v12.5c0 .69.56 1.25 1.25 1.25h12.5c.69 0 1.25-.56 1.25-1.25V5.75c0-.69-.56-1.25-1.25-1.25H5.75z" fill="currentColor"></path></svg></div>
+			<div class="reqmaxicon" id="restoreControl" style="display: none" onclick=toggleWindowRestore()><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7.518 5H6.009a3.25 3.25 0 0 1 3.24-3h8.001A4.75 4.75 0 0 1 22 6.75v8a3.25 3.25 0 0 1-3 3.24v-1.508a1.75 1.75 0 0 0 1.5-1.732v-8a3.25 3.25 0 0 0-3.25-3.25h-8A1.75 1.75 0 0 0 7.518 5ZM5.25 6A3.25 3.25 0 0 0 2 9.25v9.5A3.25 3.25 0 0 0 5.25 22h9.5A3.25 3.25 0 0 0 18 18.75v-9.5A3.25 3.25 0 0 0 14.75 6h-9.5ZM3.5 9.25c0-.966.784-1.75 1.75-1.75h9.5c.967 0 1.75.784 1.75 1.75v9.5a1.75 1.75 0 0 1-1.75 1.75h-9.5a1.75 1.75 0 0 1-1.75-1.75v-9.5Z" fill="#212121"/></svg></div>
 			<div class="reqcloseicon" onclick=window.electron.windowClose()><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
 				<path xmlns="http://www.w3.org/2000/svg" d="m296.30487,261.00095l121.79059,-121.79059l25.11575,-25.11575c3.70502,-3.70502 3.70502,-9.72567 0,-13.43069l-26.87326,-26.87326c-3.70502,-3.70502 -9.72567,-3.70502 -13.43069,0l-146.90634,146.90634l-146.90634,-146.91822c-3.70502,-3.70502 -9.72567,-3.70502 -13.43069,0l-26.88513,26.87326c-3.70502,3.70502 -3.70502,9.72567 0,13.43069l146.91822,146.91822l-146.91822,146.90634c-3.70502,3.70502 -3.70502,9.72567 0,13.43069l26.87326,26.87326c3.70502,3.70502 9.72567,3.70502 13.43069,0l146.91822,-146.90634l121.79059,121.79059l25.11575,25.11575c3.70502,3.70502 9.72567,3.70502 13.43069,0l26.87326,-26.87326c3.70502,-3.70502 3.70502,-9.72567 0,-13.43069l-146.90634,-146.90634z"/>
 			 </svg></div>
 		</div>
-	</div>
+	</div> -->
 	<div class="container" id="reqAppContainer">
-		<div class="fadeInDown avatar" style="text-align:center"><img src="./assets/img/favicon.png" alt="Gennia"
-				title="Gennia" style="max-height:150px; border-radius: 50%"></div>
+		<div class="fadeInDown avatar" style="text-align:center"><img class="avatarImg" src="./assets/img/favicon-new.png" alt="Gennia"
+				title="Gennia" style="max-height:150px; border-radius: 20%"></div>
 		<div class="fadeInUp ui segment" style="text-align:center;margin:-40px 0 0 0!important;padding-top:40px;z-index:-1">
 			<h1 style="font-size:2.4rem!important">Login to Gennia</h1>
 			<div class="ui form">
@@ -107,7 +107,7 @@
 					<input type="text" name="username" id="username" onkeydown="keyLogin()" placeholder="Username">
 				</div>
 				<div class="ui field">
-					<div class="ui fluid submit button" id="submit" onclick="login()">Login</div>
+					<div class="ui pink fluid submit button" id="submit" onclick="login()">Login</div>
 				</div>
 			</div>
 		</div>

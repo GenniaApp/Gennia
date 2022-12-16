@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="assets/img/favicon.png" style="height: 90px;"alt="Gennia">
+  <img src="assets/img/favicon-new.png" style="height: 90px;"alt="Gennia">
   <br>
   Gennia
 </h1>

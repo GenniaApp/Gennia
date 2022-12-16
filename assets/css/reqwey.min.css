@@ -26,9 +26,13 @@ html {
 } */
 
 
-img {
-	border: .5px solid #e2e2e2;
-	box-shadow: 0 0 10px #00000026
+.avatarImg {
+	border: .5px solid #696868;
+	box-shadow: 0 0 1.2px #696868
+}
+
+.ui.segment, .ui.header {
+	background-color: rgb(89, 105, 117, 70%)!important;
 }
 
 .container {
@@ -87,7 +91,7 @@ img {
 	width: 100%;
 	height: 30px;
 	z-index: 1061;
-	background-color: rgba(255,255,255,70%);
+	background-color: rgb(89, 105, 117, 70%);
 	/* background: -webkit-linear-gradient(#c7d7fc, #e4efff) !important; */
 	-webkit-app-region: drag
 }
@@ -317,8 +321,8 @@ svg {
 	line-height: 1.21428571em;
 	padding: .67857143em 1em;
 	font-size: 1em;
-	background: #fff;
-	color: rgba(0,0,0,.87);
+	background: rgba(0,0,0,.87);
+	color: #fff;
 	border: unset;
 	border-radius: .28571429rem;
 	-webkit-box-shadow: 0 0 0 0 transparent inset;
@@ -337,7 +341,7 @@ svg {
 .reqleaderboard {
 	position: absolute;
 	right: 5px;
-	top: 45px;
+	top: 5px;
 	z-index: 101;
 	min-width: 250px;
 }
@@ -434,13 +438,19 @@ svg {
 .ui.header,
 .ui.input input,
 .ui.menu,
+.ui.menu .item,
 body,
 h1,
 h2,
 h3,
 h4,
 h5 {
+	color: #fff;
 	font-family: fwzc, Lato, -apple-system, 'PingFang SC', 'Source Han Sans SC', 'Noto Sans CJK SC', 'Microsoft Yahei', 'Lantinghei SC', 'Hiragino Sans GB', 'Microsoft Sans Serif', 'WenQuanYi Micro Hei', sans-serif
+}
+
+body {
+	background-color: #000;
 }
 
 @media only screen and (max-width:992px) {

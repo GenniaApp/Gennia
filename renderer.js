@@ -117,7 +117,7 @@ function reJoinGame() {
 	toggleJoinGame()
 }
 function toggleJoinGame() {
-	$('.reqtitle').html(`<h3>Join in a Game - Gennia</h3>`)
+	window.electron.setTitle('Join in a Game - Gennia')
 	$('#reqAppContainer').html(`<div class="fadeInUp ui segment" style="text-align:center;">
 <h1 style="font-size:2.4rem!important">Input the server's URL</h1>
 <div class="ui form">
@@ -125,30 +125,12 @@ function toggleJoinGame() {
 	<input type="text" name="serverUrl" id="serverUrl" onkeydown="keyGameJoin()" placeholder="Server URL (e.g. 192.168.1.1:9016)" value="${window.url ? window.url : ''}">
 </div>
 <div class="ui field">
-	<div class="ui ${window.url ? '' : 'disabled'} fluid submit button" id="submitGameJoin" onclick="gameJoin()">Join in</div>
+	<div class="ui ${window.url ? '' : 'disabled'} fluid inverted submit button" id="submitGameJoin" onclick="gameJoin()">Join in</div>
 </div>
 </div>
 </div>`)
 	$("#serverUrl").bind("input change", () => {
-		$("#submitGameJoin").attr("class", "ui fluid submit button")
-		$("#submitGameJoin").html("Join in")
-	})
-}
-function toggleJoinGame() {
-	$('.reqtitle').html(`<h3>Join in a Game - Gennia</h3>`)
-	$('#reqAppContainer').html(`<div class="fadeInUp ui segment" style="text-align:center;">
-<h1 style="font-size:2.4rem!important">Input the server's URL</h1>
-<div class="ui form">
-<div class="ui field">
-	<input type="text" name="serverUrl" id="serverUrl" onkeydown="keyGameJoin()" placeholder="Server URL (e.g. 192.168.1.1:9016)" value="${window.url ? window.url : ''}">
-</div>
-<div class="ui field">
-	<div class="ui ${window.url ? '' : 'disabled'} fluid submit button" id="submitGameJoin" onclick="gameJoin()">Join in</div>
-</div>
-</div>
-</div>`)
-	$("#serverUrl").bind("input change", () => {
-		$("#submitGameJoin").attr("class", "ui fluid submit button")
+		$("#submitGameJoin").attr("class", "ui fluid inverted submit button")
 		$("#submitGameJoin").html("Join in")
 	})
 }
@@ -294,7 +276,7 @@ function gameJoin(username) {
 		$('#submitGameJoin').text('Connected to server.')
 
 		// set up the room ui
-		$('.reqtitle').html(`<h3>Gaming Room - Gennia</h3>`)
+		window.electron.setTitle("Gaming Room - Gennia")
 		$('#reqAppContainer').html(`
 		<h1 id="serverName" class="fadeInDown"></h1>
 		<h4 class="fadeInDown" style="color: #818181!important">
@@ -312,7 +294,7 @@ function gameJoin(username) {
 		<div class="ui bottom attached segment">
 			<div class="ui grid">
 				<div class="four wide column">
-					<div class="ui secondary vertical fluid menu">
+					<div class="ui secondary vertical fluid inverted menu">
 						<div class="active item" data-tab="game-setting">Game</div>
 						<div class="item" data-tab="map-setting">Map</div>
 						<div class="item" data-tab="terrain-setting">Terrain</div>
@@ -322,7 +304,7 @@ function gameJoin(username) {
 				<div class="twelve wide stretched column">
 					<div class="ui tab" data-tab="game-setting">
 						<!-- Tab Content !-->
-						<div class="ui form">
+						<div class="ui inverted form">
 							<div class="ui segment field">
 								<label for="gameSpeed">Game Speed</label>
 								<div name="gameSpeed" id="gameSpeed" class="ui bottom aligned pink labeled slider"></div>
@@ -331,7 +313,7 @@ function gameJoin(username) {
 					</div>
 					<div class="ui tab" data-tab="map-setting">
 						<!-- Tab Content !-->
-						<div class="ui form">
+						<div class="ui inverted form">
 							<div class="ui segment field">
 								<label for="map_width">Width: <p style="display: inline" id="map_widthVal"></p></label>
 								<div name="map_width" id="map_width" class="ui bottom aligned pink labeled slider"></div>
@@ -344,7 +326,7 @@ function gameJoin(username) {
 					</div>
 					<div class="ui tab" data-tab="terrain-setting">
 						<!-- Tab Content !-->
-						<div class="ui form">
+						<div class="ui inverted form">
 							<div class="ui segment field">
 								<label for="mountain">Mountain: <p style="display: inline" id="mountainVal"></p></label>
 								<div name="mountain" id="mountain" class="ui bottom aligned pink labeled slider"></div>
@@ -361,9 +343,11 @@ function gameJoin(username) {
 					</div>
 					<div class="ui tab" data-tab="player-setting">
 						<!-- Tab Content !-->
-						<div class="ui segment field">
-							<label for="max_player_num">Max player num: <p style="display: inline" id="max_player_numVal"></p></label>
-							<div name="max_player_num" id="max_player_num" class="ui bottom aligned pink labeled slider"></div>
+						<div class="ui inverted form">
+							<div class="ui segment field">
+								<label for="max_player_num">Max player num: <p style="display: inline" id="max_player_numVal"></p></label>
+								<div name="max_player_num" id="max_player_num" class="ui bottom aligned pink labeled slider"></div>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -380,7 +364,7 @@ function gameJoin(username) {
 			<div class="ui horizontal list" id="playerTable">
 			</div>
 		</div>
-		<button class="ui fluid huge submit button reqforcestartemitor" id="emitForceStart">Force Start(<p style="display: inline" id="forceStartNum">0</p>/<p style="display: inline" id="totalNum">0</p>)</button>`)
+		<button class="ui fluid black huge submit button reqforcestartemitor" id="emitForceStart">Force Start(<p style="display: inline" id="forceStartNum">0</p>/<p style="display: inline" id="totalNum">0</p>)</button>`)
 		$('#reqAppContainer').after(`<div class="reqmessageboard">
 	<div class="ui segment" id="messageContent">
 		<div class="header req"><svg
@@ -567,7 +551,7 @@ function gameJoin(username) {
 
 		socket.on('init_game_map', (width, height) => {
 			window.mapWidth = width, window.mapHeight = height
-			$('#reqAppContainer').html(`<div class="ui segment" style="background-color: rgb(89, 105, 117, 70%)!important;"><table id="game-map"></table></div>`)
+			$('#reqAppContainer').html(`<div class="ui segment"><table id="game-map"></table></div>`)
 			var $gameTable = $('#game-map');
 			for (var i = 0; i < width; ++i) {
 				$gameTable.append(`<tr id='tr${i}'></tr>`);
@@ -579,8 +563,7 @@ function gameJoin(username) {
 			$('.reqmessagesender').hide()
 			$('.reqmessageboard').before(`
 			<div class="reqleaderboard">
-				<div class="ui segment">
-					<table class="ui very basic table unstackable">
+				<table class="ui inverted table unstackable">
 					<thead>
 						<tr>
 							<th>Player</th>
@@ -590,7 +573,6 @@ function gameJoin(username) {
 					</thead>
 					<tbody id="reqLeaderBoardContent"></tbody>
 				</table>
-				</div>
 			</div>`)
 			window.gameTurn = 1
 			window.queue = new Queue()
@@ -711,7 +693,7 @@ function gameJoin(username) {
 			}
 			gameMap = JSON.parse(gameMap);
 			if (turn % 2 === 0) ++window.gameTurn
-			$('.reqtitle').html(`<h3> Turn ${window.gameTurn} - Gennia</h3>`)
+			window.electron.setTitle(`Turn ${window.gameTurn} - Gennia`)
 			for (var i = 0; i < width; ++i) {
 				for (var j = 0; j < height; ++j) {
 					var $cell = $(`#td${i}-${j}`);

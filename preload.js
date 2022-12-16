@@ -5,44 +5,29 @@
  * Copyright (c) 2022 Reqwey Lin (https://github.com/Reqwey)
  * 
  */
-const { contextBridge, ipcRenderer } = require('electron')
+const { contextBridge, ipcRenderer, Menu } = require('electron')
+const { Titlebar, Color } = require("custom-electron-titlebar");
 const { getIPAdress } = require('./util')
+const path = require('path');
+const { setupTitlebar } = require('custom-electron-titlebar/main');
+var titlebar;
 
 contextBridge.exposeInMainWorld('electron', {
   queryInfo: () => { ipcRenderer.send('get-info') },
-  windowMin: () => { ipcRenderer.send('window-min') },
-  windowMax: () => { ipcRenderer.send('window-max') },
-  windowClose: () => { ipcRenderer.send('window-close') },
   userLogin: (username) => { ipcRenderer.send('user-login', { username: username }) },
   changeServerConfig: (data) => { ipcRenderer.send('change-server-config', data) },
-  initServerConfig: () => { window.server_error = false }
+  initServerConfig: () => { window.server_error = false },
+  setTitle: (title) => { titlebar.updateTitle(title) }
 })
 
 window.addEventListener('DOMContentLoaded', async () => {
   console.log('content loaded');
+  titlebar = new Titlebar({
+    icon: path.join(__dirname, 'assets/img/favicon-new.png'),
+    backgroundColor: Color.fromHex('#596975b3')
+  });
 
-  // Window Controller
-  let expandControl = document.getElementById('expandControl');
-  let restoreControl = document.getElementById('restoreControl');
-  ipcRenderer.on('window-maxed', (_, value) => {
-    if (value) {
-      expandControl.style.display = 'none';
-      restoreControl.style.display = 'inline-flex';
-    } else {
-      expandControl.style.display = 'inline-flex';
-      restoreControl.style.display = 'none';
-    }
-  })
-
-  ipcRenderer.on('window-maxed', (_, value) => {
-    if (value) {
-      expandControl.style.display = 'none';
-      restoreControl.style.display = 'inline-flex';
-    } else {
-      expandControl.style.display = 'inline-flex';
-      restoreControl.style.display = 'none';
-    }
-  })
+  titlebar.updateTitle('Home - Gennia')
 
   ipcRenderer.on('get-info', (_, info) => {
     document.getElementById('leftfooter').innerHTML = `Gennia V${info}`
@@ -52,10 +37,10 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   // Toggle Dashboard
   ipcRenderer.on('toggle-dashboard', (_, username, serverStatus, serverPort) => {
-    document.getElementsByClassName('reqtitle')[0].innerHTML = `<h3>Dashboard - Gennia</h3>`
+    titlebar.updateTitle('Dashboard - Gennia');
     document.getElementsByClassName('container')[0].innerHTML = `<h1 class="fadeInDown" style="font-size:2.4rem!important">Hi <p style="display: inline" class="req" id="username">${username}</p>
 		</h1>
-		<h3 class="fadeInDown" style="color: #818181!important">Welcome to Gennia Dashboard.<br>Please choose a selection.</h3>
+		<h3 class="fadeInDown">Welcome to Gennia Dashboard.<br>Please choose a selection.</h3>
 		
 		<button class="fadeInUp ui fluid pink button" id="joinGame" data-tooltip="Join in an existing online game in your LAN." data-inverted="" data-position="top center" onclick="toggleJoinGame()">Join in a Game</button>
 		<div style="margin-top: 10px"></div>

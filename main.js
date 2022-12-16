@@ -7,6 +7,7 @@
 
 // Modules to control application life and create native browser window
 const { app, ipcMain, BrowserWindow, dialog, Tray, Menu } = require('electron')
+const { setupTitlebar, attachTitlebarToWindow } = require("custom-electron-titlebar/main")
 const path = require('path')
 const { Server } = require("socket.io")
 const crypto = require('crypto');
@@ -191,7 +192,7 @@ async function handleGame(io) {
           if (playerIndex !== -1) {
             let view = await global.map.getViewPlayer(global.players[playerIndex])
             view = JSON.stringify(view)
-            socket.emit('game_update', view, global.map.width, global.map.height, global.turn, leaderBoard)
+            socket.emit('game_update', view, global.map.width, global.map.height, global.map.turn, leaderBoard)
           }
         }
         global.map.updateTurn()
@@ -206,6 +207,7 @@ async function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1000,
     height: 740,
+    titleBarStyle: 'hidden',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
@@ -213,7 +215,7 @@ async function createWindow() {
       enableRemoteModule: true
     },
     frame: false,
-    icon: 'assets/img/favicon.png'
+    icon: 'assets/img/favicon-new.png'
   })
 
   mainWindow.loadFile('index.html')
@@ -254,7 +256,7 @@ async function createWindow() {
     }
   ];
 
-  appTray = new Tray(path.join(__dirname, 'assets/img/favicon.png'));
+  appTray = new Tray(path.join(__dirname, 'assets/img/favicon-new.png'));
   const contextMenu = Menu.buildFromTemplate(trayMenuTemplate);
   appTray.setToolTip('Gennia');
   appTray.setContextMenu(contextMenu);
@@ -267,36 +269,8 @@ async function createWindow() {
     appTray.popUpContextMenu(contextMenu);
   });
 
-  mainWindow.on("maximize", async () => {
-    mainWindow.webContents.send('window-maxed', true)
-  })
-
-  mainWindow.on("unmaximize", async () => {
-    mainWindow.webContents.send('window-maxed', false)
-  })
-
   ipcMain.on("get-info", async () => {
     mainWindow.webContents.send('get-info', app.getVersion())
-  })
-
-  // 最小化窗口（自定义导航条时）
-  ipcMain.on('window-min', async () => {
-    mainWindow.hide()
-  })
-
-  // 最大化窗口（自定义导航条时）
-  ipcMain.on('window-max', async () => {
-    // 如果已经是最大化窗口就还原
-    if (mainWindow.isMaximized()) {
-      mainWindow.restore()
-    } else {
-      mainWindow.maximize()
-    }
-  })
-
-  // 关闭窗口（自定义导航条时）
-  ipcMain.on('window-close', async () => {
-    mainWindow.close()
   })
 
   ipcMain.on("user-login", async (_, msg) => {
@@ -523,6 +497,7 @@ async function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+  setupTitlebar()
   createWindow()
 
   app.on('activate', function () {
