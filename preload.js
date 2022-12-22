@@ -5,12 +5,130 @@
  * Copyright (c) 2022 Reqwey Lin (https://github.com/Reqwey)
  * 
  */
-const { contextBridge, ipcRenderer, Menu } = require('electron')
+const { contextBridge, ipcRenderer, app, Menu, dialog } = require('electron')
 const { Titlebar, Color } = require("custom-electron-titlebar");
 const { getIPAdress } = require('./util')
 const path = require('path');
-const { setupTitlebar } = require('custom-electron-titlebar/main');
+const isMac = process.platform === 'darwin'
+
+const template = [
+  // { role: 'appMenu' }
+  ...(isMac ? [{
+    label: app.name,
+    submenu: [
+      { role: 'about' },
+      { type: 'separator' },
+      { role: 'services' },
+      { type: 'separator' },
+      { role: 'hide' },
+      { role: 'hideOthers' },
+      { role: 'unhide' },
+      { type: 'separator' },
+      { role: 'quit' }
+    ]
+  }] : []),
+  // { role: 'fileMenu' }
+  {
+    label: 'File',
+    submenu: [
+      isMac ? { role: 'close' } : { role: 'quit' }
+    ]
+  },
+  // { role: 'editMenu' }
+  {
+    label: 'Edit',
+    submenu: [
+      { role: 'undo' },
+      { role: 'redo' },
+      { type: 'separator' },
+      { role: 'cut' },
+      { role: 'copy' },
+      { role: 'paste' },
+      ...(isMac ? [
+        { role: 'pasteAndMatchStyle' },
+        { role: 'delete' },
+        { role: 'selectAll' },
+        { type: 'separator' },
+        {
+          label: 'Speech',
+          submenu: [
+            { role: 'startSpeaking' },
+            { role: 'stopSpeaking' }
+          ]
+        }
+      ] : [
+        { role: 'delete' },
+        { type: 'separator' },
+        { role: 'selectAll' }
+      ])
+    ]
+  },
+  // { role: 'viewMenu' }
+  {
+    label: 'View',
+    submenu: [
+      { role: 'reload' },
+      { role: 'forceReload' },
+      { role: 'toggleDevTools' },
+      { type: 'separator' },
+      { role: 'resetZoom' },
+      { role: 'zoomIn' },
+      { role: 'zoomOut' },
+      { type: 'separator' },
+      { role: 'togglefullscreen' }
+    ]
+  },
+  // { role: 'windowMenu' }
+  {
+    label: 'Window',
+    submenu: [
+      { role: 'minimize' },
+      { role: 'zoom' },
+      ...(isMac ? [
+        { type: 'separator' },
+        { role: 'front' },
+        { type: 'separator' },
+        { role: 'window' }
+      ] : [
+        { role: 'close' }
+      ])
+    ]
+  },
+  {
+    role: 'Help',
+    submenu: [
+      {
+        label: 'Quick Start',
+        click: async () => {
+          const { shell } = require('electron')
+          await shell.openExternal('https://gennia.reqwey.com/quick-start')
+        }
+      },
+      {
+        label: 'Version',
+        click: async () => {
+          dialog.showMessageBox({
+            type: 'info',
+            title: 'About Gennia',
+            message: 'About Gennia',
+            detail: `Version: ${app.getVersion()}\nElectron: ${process.versions.electron}\nNode.js: ${process.versions.node}\nChromium: ${process.versions.chrome}\n`
+          })
+        }
+      },
+      { type: 'separator' },
+      {
+        label: 'Star Me',
+        click: async () => {
+          const { shell } = require('electron')
+          await shell.openExternal('https://github.com/GenniaApp/Gennia')
+        }
+      }
+    ]
+  }
+]
+
 var titlebar;
+// const menu = Menu.buildFromTemplate(template)
 
 contextBridge.exposeInMainWorld('electron', {
   queryInfo: () => { ipcRenderer.send('get-info') },
@@ -25,6 +143,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   titlebar = new Titlebar({
     icon: path.join(__dirname, 'assets/img/favicon-new.png'),
     backgroundColor: Color.fromHex('#596975b3')
+    // menu: menu
   });
 
   titlebar.updateTitle('Home - Gennia')

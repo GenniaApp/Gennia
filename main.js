@@ -203,7 +203,9 @@ async function handleGame(io) {
 }
 
 async function createWindow() {
-  // Create the browser window.
+  // Create the browser window
+  setupTitlebar();
+
   mainWindow = new BrowserWindow({
     width: 1000,
     height: 740,
@@ -218,6 +220,7 @@ async function createWindow() {
     icon: 'assets/img/favicon-new.png'
   })
 
+  attachTitlebarToWindow(mainWindow);
   mainWindow.loadFile('index.html')
 
   var trayMenuTemplate = [
@@ -497,7 +500,6 @@ async function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  setupTitlebar()
   createWindow()
 
   app.on('activate', function () {
