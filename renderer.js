@@ -140,7 +140,7 @@ function toggleServerConfig() {
 		const { value: formValues } = await Swal.fire({
 			title: 'Server Settings',
 			html:
-				`<div class="ui form">
+				`<div class="ui inverted form">
 					<div class="ui fields">
 						<div class="ui twelve wide field">
 							<label for="serverName">Server Name</label>
@@ -395,8 +395,8 @@ function gameJoin(username) {
 				else {
 					Swal.fire({
 						icon: 'error',
-						title: 'Error',
-						text: 'Invalid input!',
+						title: 'Invalid input!',
+						showConfirmButton: false,
 						toast: true,
 						position: 'bottom-start',
 						timer: 2000
@@ -468,8 +468,8 @@ function gameJoin(username) {
 		socket.on('error', (title, message) => {
 			Swal.fire({
 				icon: 'error',
-				title: title,
-				text: message,
+				title: message,
+				showConfirmButton: false,
 				toast: true,
 				position: 'bottom-start',
 				timer: 2000
