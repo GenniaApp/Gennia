@@ -35,27 +35,35 @@ class GameMap {
   }
 
   getFather(conn, curPoint) {
-    while (conn[curPoint] !== curPoint) curPoint = conn[curPoint]
+    while (conn[curPoint] !== curPoint) {
+      conn[curPoint] = conn[conn[curPoint]]
+      curPoint = conn[curPoint]
+    }
     return curPoint
   }
 
   isObstacle(block) { return block.type === 'Mountain' || block.type === 'City' }
   isPlain(block) { return block.type === 'Plain' }
-
+  
   checkConnection(obstacleCount) {
-    let conn = new Array(this.width * this.height)
-    let size = new Array(this.width * this.height)
-    for (let i = 0; i < conn.length; i++) { conn[i] = i, size[i] = 1 }
+    const conn = new Array(this.width * this.height).fill().map((_, i) => i);
+    const size = new Array(this.width * this.height).fill(1);
+    let connected = false;
+  
     for (let i = 0; i < this.width; i++) {
       for (let j = 0; j < this.height; j++) {
         if (!this.isObstacle(this.map[i][j])) {
-          let curPoint = i * this.height + j;
-          (new Array(new Point(-1, 0), new Point(0, -1))).forEach((dir) => {
-            let tx = i + dir.x, ty = j + dir.y;
-            if (this.withinMap({x: tx, y: ty}) && !this.isObstacle(this.map[tx][ty])) {
-              let lastPoint = tx * this.height + ty;
-              let curFather = this.getFather(conn, curPoint);
-              let lastFather = this.getFather(conn, lastPoint);
+          const curPoint = i * this.height + j;
+          const neighbors = [
+            { x: i - 1, y: j },
+            { x: i, y: j - 1 }
+          ];
+          for (const neighbor of neighbors) {
+            const { x, y } = neighbor;
+            if (this.withinMap({ x, y }) && !this.isObstacle(this.map[x][y])) {
+              const lastPoint = x * this.height + y;
+              const curFather = this.getFather(conn, curPoint);
+              const lastFather = this.getFather(conn, lastPoint);
               if (size[lastFather] > size[curFather]) {
                 conn[curFather] = lastFather;
                 size[lastFather] += size[curFather];
@@ -64,19 +72,21 @@ class GameMap {
                 size[curFather] += size[lastFather];
               }
             }
-          })
+          }
         }
-      }
-    }
-    for (let i = 0; i < this.width; i++) {
-      for (let j = 0; j < this.height; j++) {
         if (size[this.getFather(conn, i * this.height + j)] >= this.width * this.height - obstacleCount) {
-          return true
+          connected = true;
+          break;
         }
       }
+      if (connected) {
+        break;
+      }
     }
-    return false
+  
+    return connected;
   }
+  
 
   generate() {
     console.log("Width:", this.width, "Height:", this.height)
