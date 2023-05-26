@@ -64,12 +64,14 @@ class GameMap {
               const lastPoint = x * this.height + y;
               const curFather = this.getFather(conn, curPoint);
               const lastFather = this.getFather(conn, lastPoint);
-              if (size[lastFather] > size[curFather]) {
-                conn[curFather] = lastFather;
-                size[lastFather] += size[curFather];
-              } else {
-                conn[lastFather] = curFather;
-                size[curFather] += size[lastFather];
+              if (curFather !== lastFather){
+                if (size[lastFather] > size[curFather]) {
+                  conn[curFather] = lastFather;
+                  size[lastFather] += size[curFather];
+                } else {
+                  conn[lastFather] = curFather;
+                  size[curFather] += size[lastFather];
+                }
               }
             }
           }
