@@ -1,6 +1,6 @@
 {
   "name": "gennia",
-  "version": "1.0.10patch2",
+  "version": "1.0.11",
   "description": "Yet another portable generals.io server & client",
   "main": "main.js",
   "scripts": {
@@ -23,7 +23,7 @@
   "build": {
     "appId": "com.reqwey.gennia",
     "productName": "Gennia",
-    "copyright": "© 2022 Gennia Developing Team",
+    "copyright": "© 2023 Gennia Developing Team",
     "win": {
       "icon": "assets/img/favicon-new.png"
     }

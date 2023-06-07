@@ -1,3 +1,12 @@
+/*
+
+Gennia Map Constructor
+
+@Author: Reqwey(hi@reqwey.com)
+         Jackiexiao(707610215@qq.com)
+         GitHub Copilot
+
+*/
 const Block = require('./block');
 const Point = require('./point');
 
@@ -19,8 +28,8 @@ function getRandomInt(min, max) {
 
 class GameMap {
   constructor(width, height, mountain, city, swamp, kings) {
-    this.width = parseInt(kings.length * 2.7 + 10 * width);
-    this.height = parseInt(kings.length * 2.7 + 10 * height);
+    this.width = parseInt(kings.length * 5 + 6 * width);
+    this.height = parseInt(kings.length * 5 + 6 * height);
     if (mountain + city === 0) {
       this.mountain = this.city = 0
     } else {
@@ -120,6 +129,7 @@ class GameMap {
         }
       }
     }
+    console.log('Kings generated successfully');
     // Generate the mountain
     for (let i = 1; i <= this.mountain; ++i) {
       let generated = false
@@ -139,6 +149,7 @@ class GameMap {
       }
       if (!generated) { this.mountain = i - 1; console.log("Mountain Interrupted", i); break }
     }
+    console.log('Mountains generated successfully');
     // Generate the city
     for (let i = 1; i <= this.city; ++i) {
       let generated = false
@@ -159,6 +170,7 @@ class GameMap {
       }
       if (!generated) { this.city = i - 1; console.log("City Interrupted", i); break }
     }
+    console.log('Cities generated successfully');
     // Generate the swamp.
     for (let i = 1, x, y; i <= this.swamp; ++i) {
       while (true) {
@@ -168,6 +180,7 @@ class GameMap {
       }
       this.map[x][y].type = 'Swamp'
     }
+    console.log('Swamps generated successfully');
     let kings = this.kings
     return new Promise(function (resolve, reject) {
       console.log('Map generated successfully')

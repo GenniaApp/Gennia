@@ -6,7 +6,7 @@
  * 
  */
 const { contextBridge, ipcRenderer, app, Menu, dialog } = require('electron')
-const { Titlebar, Color } = require("custom-electron-titlebar");
+const { Titlebar, TitlebarColor } = require("custom-electron-titlebar");
 const { getIPAdress } = require('./util')
 const path = require('path');
 var titlebar;
@@ -24,7 +24,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   console.log('content loaded');
   titlebar = new Titlebar({
     icon: path.join(__dirname, 'assets/img/favicon-new.png'),
-    backgroundColor: Color.fromHex('#596975b3')
+    backgroundColor: TitlebarColor.fromHex('#596975b3')
     // menu: menu
   });
 
